@@ -20,6 +20,9 @@ namespace MelonPrefManager.UI.InteractiveValues
         public override bool HasSubContent => false;
         public override bool SubContentWanted => false;
 
+        public override bool SupportsType(Type type)
+            => type.IsEnum;
+
         internal KeyValuePair<int,string>[] m_values = new KeyValuePair<int, string>[0];
         internal Dictionary<string, Dropdown.OptionData> m_dropdownOptions = new Dictionary<string, Dropdown.OptionData>();
 

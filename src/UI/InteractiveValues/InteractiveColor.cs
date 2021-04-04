@@ -16,6 +16,9 @@ namespace MelonPrefManager.UI.InteractiveValues
         public override bool HasSubContent => true;
         public override bool SubContentWanted => true;
 
+        public override bool SupportsType(Type type)
+            => type == typeof(Color);
+
         public override void RefreshUIForValue()
         {
             base.RefreshUIForValue();

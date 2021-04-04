@@ -11,34 +11,49 @@ using MelonPrefManager.Runtime;
 
 namespace MelonPrefManager.UI.InteractiveValues
 {
-    // TODO: Support arbitrary types through TomlMapper (if they dont have a specific ivalue)
-    // Just use string editor and use the mapper to set/parse the value.
-
-    // TODO: Support registering custom IValue handlers, need to redesign the GetIValueForType method to support that.
-
-    public class InteractiveValue
+    public abstract class InteractiveValue
     {
+        private static readonly HashSet<Type> s_customIValueTypes = new HashSet<Type>();
+        private static readonly List<InteractiveValue> s_customIValueInstances = new List<InteractiveValue>();
+
+        public static void RegisterIValueType<T>() where T : InteractiveValue
+        {
+            if (s_customIValueTypes.Contains(typeof(T)))
+                return;
+
+            s_customIValueInstances.Add((T)Activator.CreateInstance(typeof(T), new object[] { null, typeof(object) }));
+            s_customIValueTypes.Add(typeof(T));
+        }
+
         public static Type GetIValueForType(Type type)
         {
+            // Boolean
             if (type == typeof(bool))
                 return typeof(InteractiveBool);
+            // Number
             else if (type.IsPrimitive || typeof(decimal).IsAssignableFrom(type))
                 return typeof(InteractiveNumber);
+            // String
             else if (type == typeof(string))
                 return typeof(InteractiveString);
+            // Flags and Enum
             else if (typeof(Enum).IsAssignableFrom(type))
-            {
                 if (type.GetCustomAttributes(typeof(FlagsAttribute), true) is object[] fa && fa.Any())
                     return typeof(InteractiveFlags);
                 else
                     return typeof(InteractiveEnum);
-            }
+            // Color
             else if (typeof(Color).IsAssignableFrom(type))
                 return typeof(InteractiveColor);
-            else if (InteractiveUnityStruct.SupportsType(type))
+            // Vector / Rect
+            else if (InteractiveUnityStruct.IsTypeSupported(type))
                 return typeof(InteractiveUnityStruct);
+            // Custom defined handlers
+            else if (s_customIValueInstances.FirstOrDefault(it => it.SupportsType(type)) is InteractiveValue custom)
+                return custom.GetType();
+            // fallback to default handler
             else
-                return typeof(InteractiveValue);
+                return typeof(InteractiveTomlObject);
         }
 
         public static InteractiveValue Create(object value, Type fallbackType)
@@ -56,6 +71,8 @@ namespace MelonPrefManager.UI.InteractiveValues
             this.Value = value;
             this.FallbackType = valueType;
         }
+
+        public abstract bool SupportsType(Type type);
 
         public CachedConfigEntry Owner;
 

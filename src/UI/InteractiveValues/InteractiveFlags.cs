@@ -19,6 +19,9 @@ namespace MelonPrefManager.UI.InteractiveValues
         public override bool HasSubContent => true;
         public override bool SubContentWanted => true;
 
+        public override bool SupportsType(Type type)
+            => type.IsEnum && type.GetCustomAttributes(true).Any(it => it is FlagsAttribute);
+
         internal bool[] m_enabledFlags;
         internal Toggle[] m_toggles;
 

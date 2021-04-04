@@ -175,7 +175,7 @@ namespace MelonPrefManager.UI.InteractiveValues
 
     public class InteractiveUnityStruct : InteractiveValue
     {
-        public static bool SupportsType(Type type) => s_supportedTypes.Contains(type);
+        public static bool IsTypeSupported(Type type) => s_supportedTypes.Contains(type);
         private static readonly HashSet<Type> s_supportedTypes = new HashSet<Type>
         {
             typeof(Vector2), 
@@ -187,6 +187,9 @@ namespace MelonPrefManager.UI.InteractiveValues
         //~~~~~~~~~ Instance ~~~~~~~~~~
 
         public InteractiveUnityStruct(object value, Type valueType) : base(value, valueType) { }
+
+        public override bool SupportsType(Type type)
+            => IsTypeSupported(type);
 
         public override bool HasSubContent => true;
         public override bool SubContentWanted => true;

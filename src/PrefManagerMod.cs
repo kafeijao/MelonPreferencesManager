@@ -24,7 +24,7 @@ namespace MelonPrefManager
         public const string GUID = "com.sinai.melonprefmanager";
         public const string NAME = "MelonPreferencesManager";
         public const string AUTHOR = "Sinai";
-        public const string VERSION = "0.1.0";
+        public const string VERSION = "0.2.0";
 
         public static PrefManagerMod Instance { get; private set; }
 
@@ -57,19 +57,63 @@ namespace MelonPrefManager
 
             Main_Menu_Toggle = INTERNAL_CATEGORY.CreateEntry("Main Menu Toggle Key", KeyCode.F5);
 
-            //  ~~~~~~~~~~~~~~~~ TEST CONFIG ~~~~~~~~~~~~~~~~
+            ////  ~~~~~~~~~~~~~~~~ TEST CONFIG ~~~~~~~~~~~~~~~~
 
-            var testCtg = MelonPreferences.CreateCategory("TestConfig");
+            //MelonPreferences.Mapper.RegisterMapper(TestReader, TestWriter);
+            //UI.InteractiveValues.InteractiveValue.RegisterIValueType<TestInteractiveValue>();
 
-            testCtg.CreateEntry("Bool", false, description: "Descriptions are supported");
-            testCtg.CreateEntry("Byte", (byte)0xD, description: "Descriptions with new\r\nlines are supported.");
-            testCtg.CreateEntry("Int", 32, description: "Hello world!");
-            testCtg.CreateEntry("Float", 666f, description: "Example of a float value range", validator: new ValueRange<float>(0, 1000f));
-            testCtg.CreateEntry("KeyCode", KeyCode.Dollar, description: "Dropdown example");
-            testCtg.CreateEntry("String", "Hello, world!", description: "String example");
-            testCtg.CreateEntry("Color", Color.magenta, description: "Color example");
-            testCtg.CreateEntry("Vector3", Vector3.down, description: "Vector3 example");
+            //var testCtg = MelonPreferences.CreateCategory("TestConfig");
+
+            //testCtg.CreateEntry("Bool", false, description: "Descriptions are supported");
+            //testCtg.CreateEntry("Byte", (byte)0xD, description: "Descriptions with new\r\nlines are supported.");
+            //testCtg.CreateEntry("Int", 32, description: "Hello world!");
+            //testCtg.CreateEntry("Float", 666f, description: "Example of a float value range", validator: new ValueRange<float>(0, 1000f));
+            //testCtg.CreateEntry("KeyCode", KeyCode.Dollar, description: "Dropdown example");
+            //testCtg.CreateEntry("String", "Hello, world!", description: "String example");
+            //testCtg.CreateEntry("Color", Color.magenta, description: "Color example");
+            //testCtg.CreateEntry("Vector3", Vector3.down, description: "Vector3 example");
+            //testCtg.CreateEntry("TestCustom", new TestConfigClass() { myString = "helloworld", myInt = 69 }, null, "Testing a custom type");
         }
+
+        //public class TestConfigClass
+        //{
+        //    public string myString;
+        //    public int myInt;
+        //}
+
+        //public static TomlObject TestWriter(TestConfigClass testConfig)
+        //{
+        //    string[] arr = new[] { testConfig.myString, testConfig.myInt.ToString() };
+        //    return MelonPreferences.Mapper.WriteArray(arr);
+        //}
+
+        //public static TestConfigClass TestReader(TomlObject value)
+        //{
+        //    string[] arr = MelonPreferences.Mapper.ReadArray<string>(value as TomlArray);
+        //    return new TestConfigClass
+        //    {
+        //        myString = arr[0],
+        //        myInt = int.Parse(arr[1]),
+        //    };
+        //}
+
+        //public class TestInteractiveValue : UI.InteractiveValues.InteractiveValue
+        //{
+        //    public TestInteractiveValue(object value, Type valueType) : base(value, valueType)
+        //    {
+        //    }
+
+        //    public override bool SupportsType(Type type)
+        //        => type == typeof(TestConfigClass);
+
+        //    public override void ConstructUI(GameObject parent, GameObject subGroup)
+        //    {
+        //        base.ConstructUI(parent, subGroup);
+
+        //        var lbl = UIFactory.CreateLabel(m_mainContent, "testlbl", "Hello world!", TextAnchor.MiddleLeft);
+        //        UIFactory.SetLayoutElement(lbl.gameObject, minWidth: 200, minHeight: 25);
+        //    }
+        //}
 
         #endregion
 
@@ -130,27 +174,4 @@ namespace MelonPrefManager
 
         #endregion
     }
-
-    #region MELONPREFERENCES EXTENSIONS
-
-    // Temporary, will PR these into MelonLoader repo if still necessary at release.
-
-    //public static class MelonPrefExtensions
-    //{
-    //    public static object BoxedValue(this MelonPreferences_Entry entry)
-    //    {
-    //        return entry.GetType()
-    //                    .GetField("myValue", BindingFlags.NonPublic | BindingFlags.Instance)
-    //                    .GetValue(entry);
-    //    }
-
-    //    public static void SetValue(this MelonPreferences_Entry entry, object value)
-    //    {
-    //        entry.GetType()
-    //             .GetProperty("Value")
-    //             .SetValue(entry, value, null);
-    //    }
-    //}
-
-    #endregion
 }

@@ -15,12 +15,15 @@ The UI supports the following types:
 
 * Toggle: `bool`
 * Number input: `int`, `float`, etc (NOTE: `decimal` is **not** supported by MelonLoader currently)
-* Input: `string`
+* String input: `string`
 * Color editor: `Color`
 * Struct editor: `Vector2`, `Vector3`, `Vector4`, `Rect`
+* Toml input: Anything with a corresponding Mapper registered to `MelonPreferences.Mapper`.
 
-To make a slider, use a number value and set the `ValueValidator` when creating the entry.
+To make a slider, use a number type and provide a `ValueRange` for the Validator when creating the entry.
 
-## Todo
+You can register a custom UI handler for a Type, to override the default Toml input editor for it.
+* Define a `MyIValueType : InteractiveValue` class (refer to existing classes for examples)
+* Call `InteractiveValue.RegisterIValueType<MyIValueType>();`
+* Note: If the Type is already handled by an existing InteractiveValue, your one will not be used.
 
-* Support arbitrary TomlObject types by using the provided Mapper and editing through a string

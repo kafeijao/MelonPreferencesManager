@@ -17,6 +17,9 @@ namespace MelonPrefManager.UI.InteractiveValues
         public override bool HasSubContent => false;
         public override bool SubContentWanted => false;
 
+        public override bool SupportsType(Type type)
+            => type == typeof(string);
+
         public override void OnValueUpdated()
         {
             base.OnValueUpdated();

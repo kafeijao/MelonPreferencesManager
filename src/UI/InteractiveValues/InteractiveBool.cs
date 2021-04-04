@@ -18,6 +18,9 @@ namespace MelonPrefManager.UI.InteractiveValues
         internal Toggle m_toggle;
         //internal Button m_applyBtn;
 
+        public override bool SupportsType(Type type)
+            => type == typeof(bool);
+
         public override void OnValueUpdated()
         {
             base.OnValueUpdated();

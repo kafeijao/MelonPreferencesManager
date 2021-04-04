@@ -11,6 +11,7 @@
     <AssemblyName>MelonPreferencesManager</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <!-- CONFIGURATIONS -->
   <!-- IL2CPP -->
@@ -116,6 +117,7 @@
     <Compile Include="UI\InteractiveValues\InteractiveFlags.cs" />
     <Compile Include="UI\InteractiveValues\InteractiveNumber.cs" />
     <Compile Include="UI\InteractiveValues\InteractiveString.cs" />
+    <Compile Include="UI\InteractiveValues\InteractiveTomlObject.cs" />
     <Compile Include="UI\InteractiveValues\InteractiveUnityStruct.cs" />
     <Compile Include="UI\InteractiveValues\InteractiveValue.cs" />
     <Compile Include="UI\PreferencesEditor.cs" />
