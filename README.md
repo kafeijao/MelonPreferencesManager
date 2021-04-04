@@ -2,7 +2,7 @@
 
 In-game UI for managing MelonLoader Mod Preferences. Supports IL2CPP and Mono Unity games.
 
-Requires MelonLoader 0.3.1+ (currently you must build this version yourself, otherwise wait for the release).
+Currently this is more or less done, but it requires MelonLoader v0.3.1 (currently requires [my fork](https://github.com/sinai-dev/MelonLoader)).
 
 ## Releases
 
@@ -22,7 +22,7 @@ Requires MelonLoader 0.3.1+ (currently you must build this version yourself, oth
 The UI supports the following types:
 
 * Toggle: `bool`
-* Number input: `int`, `float`, etc (NOTE: `decimal` is **not** supported by MelonLoader currently)
+* Number input: `int`, `float` etc (any primitive number type)
 * String input: `string`
 * Dropdown: `enum`
 * Color editor: `Color`
