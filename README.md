@@ -4,8 +4,16 @@ In-game UI for managing MelonLoader Mod Preferences. Supports IL2CPP and Mono Un
 
 Requires MelonLoader 0.3.1+ (currently you must build this version yourself, otherwise wait for the release).
 
+## Releases
+
 * [Download (IL2CPP)](https://github.com/sinai-dev/MelonPreferencesManager/releases/latest/download/MelonPrefManager.IL2CPP.zip)
 * [Download (Mono)](https://github.com/sinai-dev/MelonPreferencesManager/releases/latest/download/MelonPrefManager.Mono.zip)
+
+## How to use
+
+* Put the DLL in your `[GameFolder]\Mods\` folder.
+* Start the game and press `F5` to open the Menu.
+* You can change the keybinding under the `MelonPreferencesManager` category in the Menu, or by editing the file `[GameFolder]\UserData\MelonPreferences.cfg`.
 
 [![](img/preview.png)](https://raw.githubusercontent.com/sinai-dev/MelonPreferencesManager/master/img/preview.png)
 
