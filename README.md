@@ -24,6 +24,7 @@ The UI supports the following types:
 * Toggle: `bool`
 * Number input: `int`, `float`, etc (NOTE: `decimal` is **not** supported by MelonLoader currently)
 * String input: `string`
+* Dropdown: `enum`
 * Color editor: `Color`
 * Struct editor: `Vector2`, `Vector3`, `Vector4`, `Rect`
 * Toml input: Anything with a corresponding Mapper registered to `MelonPreferences.Mapper`.
