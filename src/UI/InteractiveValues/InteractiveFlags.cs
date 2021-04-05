@@ -27,8 +27,6 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         public override void OnValueUpdated()
         {
-            base.OnValueUpdated();
-
             var enabledNames = new List<string>();
 
             var enabled = Value?.ToString().Split(',').Select(it => it.Trim());
@@ -36,23 +34,26 @@ namespace MelonPrefManager.UI.InteractiveValues
                 enabledNames.AddRange(enabled);
 
             for (int i = 0; i < m_values.Length; i++)
-            {
                 m_enabledFlags[i] = enabledNames.Contains(m_values[i].Value);
-            }
+
+            base.OnValueUpdated();
         }
 
+        private bool refreshingToggleStates;
         public override void RefreshUIForValue()
         {
             base.RefreshUIForValue();
 
             if (m_subContentConstructed)
             {
+                refreshingToggleStates = true;
                 for (int i = 0; i < m_values.Length; i++)
                 {
                     var toggle = m_toggles[i];
                     if (toggle.isOn != m_enabledFlags[i])
                         toggle.isOn = m_enabledFlags[i];
                 }
+                refreshingToggleStates = false;
             }
         }
 
@@ -109,6 +110,9 @@ namespace MelonPrefManager.UI.InteractiveValues
 
             toggle.onValueChanged.AddListener((bool val) => 
             {
+                if (refreshingToggleStates)
+                    return;
+
                 m_enabledFlags[index] = val;
                 SetValueFromToggles();
                 RefreshUIForValue();

@@ -241,7 +241,7 @@ namespace MelonPrefManager.UI
             {
                 SetHiddenConfigVisibility(val);
             });
-            toggleText.text = "Show Advanced Configs";
+            toggleText.text = "Show Advanced Settings";
             UIFactory.SetLayoutElement(toggleObj, minWidth: 280, minHeight: 25, flexibleHeight: 0, flexibleWidth: 0);
 
             var inputField = UIFactory.CreateInputField(toolbarGroup, "FilterInput", "Search...", 14);

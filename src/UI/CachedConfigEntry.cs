@@ -7,26 +7,10 @@ using UnityEngine.UI;
 using MelonLoader;
 using MelonPrefManager.UI.InteractiveValues;
 using MelonPrefManager.UI.Utility;
+using System.Reflection;
 
 namespace MelonPrefManager.UI
 {
-    public static class MelonPrefExtensions
-    {
-        public static object GetEditedValue(this MelonPreferences_Entry entry)
-        {
-            var type = typeof(MelonPreferences_Entry<>).MakeGenericType(entry.GetReflectedType());
-            var prop = ReflectionUtility.GetPropertyInfo(type, "EditedValue");
-            return prop.GetValue(entry, null);
-        }
-
-        public static void SetEditedValue(this MelonPreferences_Entry entry, object value)
-        {
-            var type = typeof(MelonPreferences_Entry<>).MakeGenericType(entry.GetReflectedType());
-            var prop = ReflectionUtility.GetPropertyInfo(type, "EditedValue");
-            prop.SetValue(entry, value, null);
-        }
-    }
-
     public class CachedConfigEntry
     {
         public MelonPreferences_Entry RefConfig { get; }
@@ -183,6 +167,31 @@ namespace MelonPrefManager.UI
                 IValue.m_mainContentParent = ContentGroup;
                 IValue.m_subContentParent = this.SubContentGroup;
             }
+        }
+    }
+
+    public static class MelonPrefExtensions
+    {
+        private static readonly Dictionary<MelonPreferences_Entry, PropertyInfo> editedProps = new Dictionary<MelonPreferences_Entry, PropertyInfo>();
+
+        public static object GetEditedValue(this MelonPreferences_Entry entry)
+        {
+            if (!editedProps.ContainsKey(entry))
+            {
+                var type = typeof(MelonPreferences_Entry<>).MakeGenericType(entry.GetReflectedType());
+                editedProps.Add(entry, ReflectionUtility.GetPropertyInfo(type, "EditedValue"));
+            }
+            return editedProps[entry].GetValue(entry, null);
+        }
+
+        public static void SetEditedValue(this MelonPreferences_Entry entry, object value)
+        {
+            if (!editedProps.ContainsKey(entry))
+            {
+                var type = typeof(MelonPreferences_Entry<>).MakeGenericType(entry.GetReflectedType());
+                editedProps.Add(entry, ReflectionUtility.GetPropertyInfo(type, "EditedValue"));
+            }
+            editedProps[entry].SetValue(entry, value, null);
         }
     }
 }

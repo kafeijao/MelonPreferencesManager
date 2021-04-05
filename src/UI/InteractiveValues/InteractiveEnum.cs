@@ -86,6 +86,9 @@ namespace MelonPrefManager.UI.InteractiveValues
 
             //m_baseLabel.text = "";
 
+            if (this is InteractiveFlags)
+                return;
+
             string key = Value.ToString();
             if (m_dropdownOptions.ContainsKey(key))
                 m_dropdown.value = m_dropdown.options.IndexOf(m_dropdownOptions[key]);
