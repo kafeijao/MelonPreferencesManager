@@ -69,15 +69,10 @@ namespace MelonPrefManager.UI.InteractiveValues
         }
 
         internal InputField m_valueInput;
-        //internal Button m_applyBtn;
 
-        public override void ConstructUI(GameObject parent)//, GameObject subGroup)
+        public override void ConstructUI(GameObject parent)
         {
-            base.ConstructUI(parent);//, subGroup);
-
-            //var labelLayout = m_baseLabel.gameObject.GetComponent<LayoutElement>();
-            //labelLayout.minWidth = 50;
-            //labelLayout.flexibleWidth = 0;
+            base.ConstructUI(parent);
 
             var inputObj = UIFactory.CreateInputField(m_mainContent, "InteractiveNumberInput", "...");
             UIFactory.SetLayoutElement(inputObj, minWidth: 120, minHeight: 25, flexibleWidth: 0);
@@ -94,28 +89,27 @@ namespace MelonPrefManager.UI.InteractiveValues
             {
                 var sliderObj = UIFactory.CreateSlider(m_mainContent, "ValueSlider", out Slider slider);
                 UIFactory.SetLayoutElement(sliderObj, minWidth: 250, minHeight: 25);
-                slider.minValue = (float)range.MinValue;
-                slider.maxValue = (float)range.MaxValue;
 
-                slider.value = (float)Value;
+                slider.minValue = (float)Convert.ChangeType(range.MinValue, typeof(float));
+                slider.maxValue = (float)Convert.ChangeType(range.MaxValue, typeof(float));
+
+                slider.value = (float)Convert.ChangeType(Value, typeof(float));
 
                 slider.onValueChanged.AddListener((float val) =>
                 {
-                    if ((float)Value == val)
+                    float f = (float)Convert.ChangeType(Value, typeof(float));
+                    if (f == val)
                         return;
 
-                    Value = val;
+                    Value = Convert.ChangeType(val, FallbackType);
                     Owner.SetValue();
                 });
 
                 m_valueInput.onValueChanged.AddListener((string val) => 
                 {
-                    slider.value = (float)Value;
+                    slider.value = (float)Convert.ChangeType(Value, typeof(float));
                 });
             }
-
-            //m_applyBtn = UIFactory.CreateButton(m_mainContent, "ApplyButton", "Apply", SetValueFromInput, new Color(0.2f, 0.2f, 0.2f));
-            //UIFactory.SetLayoutElement(m_applyBtn.gameObject, minWidth: 50, minHeight: 25, flexibleWidth: 0);
         }
     }
 }

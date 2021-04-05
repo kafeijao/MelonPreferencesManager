@@ -24,7 +24,7 @@ namespace MelonPrefManager
         public const string GUID = "com.sinai.melonprefmanager";
         public const string NAME = "MelonPreferencesManager";
         public const string AUTHOR = "Sinai";
-        public const string VERSION = "0.3.0";
+        public const string VERSION = "0.3.1";
 
         public static PrefManagerMod Instance { get; private set; }
 
@@ -58,13 +58,12 @@ namespace MelonPrefManager
             ////  ~~~~~~~~~~~~~~~~ TEST CONFIG ~~~~~~~~~~~~~~~~
 
             //MelonPreferences.Mapper.RegisterMapper(TestReader, TestWriter);
-            ////UI.InteractiveValues.InteractiveValue.RegisterIValueType<TestInteractiveValue>();
 
             //var testCtg = MelonPreferences.CreateCategory("TestConfig");
 
             //testCtg.CreateEntry("Bool", false, description: "Descriptions are supported");
             //testCtg.CreateEntry("Byte", (byte)0xD, description: "Descriptions with new\r\nlines are supported.");
-            //testCtg.CreateEntry("Int", 32, description: "All primitive number types are supported");
+            //testCtg.CreateEntry("Int", 32, description: "All primitive number types are supported", validator: new ValueRange<int>(0, 100));
             //testCtg.CreateEntry("Float", 666f, description: "This setting has a ValueRange of 0 to 1000", validator: new ValueRange<float>(0, 1000f));
             //testCtg.CreateEntry("KeyCode", KeyCode.Dollar, description: "Enums will be displayed as a dropdown");
             //testCtg.CreateEntry("String", "Hello, world!", description: "Strings use a basic input field");

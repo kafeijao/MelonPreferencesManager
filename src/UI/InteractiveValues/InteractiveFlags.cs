@@ -80,9 +80,9 @@ namespace MelonPrefManager.UI.InteractiveValues
             RefreshUIForValue();
         }
 
-        public override void ConstructUI(GameObject parent)//, GameObject subGroup)
+        public override void ConstructUI(GameObject parent)
         {
-            base.ConstructUI(parent);//, subGroup);
+            base.ConstructUI(parent);
         }
 
         public override void ConstructSubcontent()

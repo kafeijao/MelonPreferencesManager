@@ -249,57 +249,64 @@ namespace MelonPrefManager.UI
                 if (_categoryInfos.ContainsKey(ctg.Identifier))
                     continue;
 
-                var info = new PrefCategoryInfo()
+                try
                 {
-                    RefCategory = ctg,
-                };
-
-                // List button
-
-                var btn = UIFactory.CreateButton(CategoryListViewport,
-                    "BUTTON_" + ctg.Identifier,
-                    ctg.DisplayName,
-                    () => { SetActiveCategory(ctg.Identifier); },
-                    btnColors);
-                UIFactory.SetLayoutElement(btn.gameObject, flexibleWidth: 9999, minHeight: 30, flexibleHeight: 0);
-
-                info.listButton = btn;
-
-                // hide buttons for completely-hidden categories.
-                if (!ctg.Entries.Any(it => !it.IsHidden))
-                {
-                    btn.gameObject.SetActive(false);
-                    info.isCompletelyHidden = true;
-                }
-
-                // Editor content
-
-                var content = UIFactory.CreateVerticalGroup(ConfigEditorViewport, "CATEGORY_" + ctg.Identifier, true, false, true, true, 4,
-                    default, new Color(0.05f, 0.05f, 0.05f));
-
-                // Actual config entry editors
-                foreach (var pref in ctg.Entries)
-                {
-                    var cache = new CachedConfigEntry(pref, content);
-                    cache.Enable();
-
-                    var obj = cache.m_mainContent;
-
-                    info.Prefs.Add(new PrefInfo()
+                    var info = new PrefCategoryInfo()
                     {
-                        RefEntry = pref,
-                        content = obj
-                    });
+                        RefCategory = ctg,
+                    };
 
-                    if (pref.IsHidden)
-                        obj.SetActive(false);
+                    // List button
+
+                    var btn = UIFactory.CreateButton(CategoryListViewport,
+                        "BUTTON_" + ctg.Identifier,
+                        ctg.DisplayName,
+                        () => { SetActiveCategory(ctg.Identifier); },
+                        btnColors);
+                    UIFactory.SetLayoutElement(btn.gameObject, flexibleWidth: 9999, minHeight: 30, flexibleHeight: 0);
+
+                    info.listButton = btn;
+
+                    // hide buttons for completely-hidden categories.
+                    if (!ctg.Entries.Any(it => !it.IsHidden))
+                    {
+                        btn.gameObject.SetActive(false);
+                        info.isCompletelyHidden = true;
+                    }
+
+                    // Editor content
+
+                    var content = UIFactory.CreateVerticalGroup(ConfigEditorViewport, "CATEGORY_" + ctg.Identifier, true, false, true, true, 4,
+                        default, new Color(0.05f, 0.05f, 0.05f));
+
+                    // Actual config entry editors
+                    foreach (var pref in ctg.Entries)
+                    {
+                        var cache = new CachedConfigEntry(pref, content);
+                        cache.Enable();
+
+                        var obj = cache.m_mainContent;
+
+                        info.Prefs.Add(new PrefInfo()
+                        {
+                            RefEntry = pref,
+                            content = obj
+                        });
+
+                        if (pref.IsHidden)
+                            obj.SetActive(false);
+                    }
+
+                    content.SetActive(false);
+
+                    info.contentObj = content;
+
+                    _categoryInfos.Add(ctg.Identifier, info);
                 }
-
-                content.SetActive(false);
-
-                info.contentObj = content;
-
-                _categoryInfos.Add(ctg.Identifier, info);
+                catch (Exception ex)
+                {
+                    PrefManagerMod.LogWarning($"Exception setting up category '{ctg.DisplayName}'!\r\n{ex}");
+                }
             }
         }
 

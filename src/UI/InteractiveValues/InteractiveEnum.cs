@@ -107,13 +107,13 @@ namespace MelonPrefManager.UI.InteractiveValues
         }
 
         internal Dropdown m_dropdown;
-        //internal Text m_dropdownText;
 
-        public override void ConstructUI(GameObject parent)//, GameObject subGroup)
+        public override void ConstructUI(GameObject parent)
         {
-            base.ConstructUI(parent);//, subGroup);
+            base.ConstructUI(parent);
 
-            //UIFactory.SetLayoutElement(m_baseLabel.gameObject, minWidth: 0, flexibleWidth: 0);
+            if (this is InteractiveFlags)
+                return;
 
             // dropdown
 

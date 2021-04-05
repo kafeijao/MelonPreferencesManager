@@ -134,12 +134,12 @@ namespace MelonPrefManager.UI.InteractiveValues
             {
                 this.m_subContentParent.SetActive(true);
                 this.m_subContentParent.transform.SetAsLastSibling();
-                m_subExpandBtn.GetComponentInChildren<Text>().text = "▼";
+                m_subExpandBtn.GetComponentInChildren<Text>().text = "▼ Click to hide";
             }
             else
             {
                 this.m_subContentParent.SetActive(false);
-                m_subExpandBtn.GetComponentInChildren<Text>().text = "▲";
+                m_subExpandBtn.GetComponentInChildren<Text>().text = "▲ Expand to edit";
             }
 
             OnToggleSubcontent(m_subContentParent.activeSelf);
@@ -178,8 +178,9 @@ namespace MelonPrefManager.UI.InteractiveValues
             // subcontent expand button
             if (HasSubContent)
             {
-                m_subExpandBtn = UIFactory.CreateButton(m_mainContent, "ExpandSubcontentButton", "▲", ToggleSubcontent, new Color(0.3f, 0.3f, 0.3f));
-                UIFactory.SetLayoutElement(m_subExpandBtn.gameObject, minHeight: 25, minWidth: 25, flexibleWidth: 0, flexibleHeight: 0);
+                m_subExpandBtn = UIFactory.CreateButton(m_mainContent, "ExpandSubcontentButton", 
+                    "▲ Expand to edit", ToggleSubcontent, new Color(0.3f, 0.3f, 0.3f));
+                UIFactory.SetLayoutElement(m_subExpandBtn.gameObject, minHeight: 25, minWidth: 120, flexibleWidth: 0, flexibleHeight: 0);
             }
         }
 
