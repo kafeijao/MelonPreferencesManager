@@ -70,7 +70,7 @@ namespace MelonPrefManager.UI.InteractiveValues
             var type = Value?.GetType() ?? FallbackType;
             Value = Enum.Parse(type, val);
             RefreshUIForValue();
-            Owner.SetValue();
+            Owner.SetValueFromIValue();
         }
 
         internal override void OnToggleSubcontent(bool toggle)

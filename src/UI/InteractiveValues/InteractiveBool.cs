@@ -54,7 +54,7 @@ namespace MelonPrefManager.UI.InteractiveValues
         {
             Value = val;
             RefreshUIForValue();
-            Owner.SetValue();
+            Owner.SetValueFromIValue();
         }
 
         private Text labelText;

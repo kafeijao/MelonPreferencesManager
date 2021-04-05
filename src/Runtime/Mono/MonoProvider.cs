@@ -19,7 +19,8 @@ namespace MelonPrefManager.Runtime.Mono
             Reflection = new MonoReflection();
             TextureUtil = new MonoTextureUtil();
         }
-        public override ColorBlock SetColorBlock(ColorBlock colors, Color? normal = null, Color? highlighted = null, Color? pressed = null)
+        public override ColorBlock SetColorBlock(ColorBlock colors, Color? normal = null, Color? highlighted = null, Color? pressed = null,
+            Color? disabled = null)
         {
             if (normal != null)
                 colors.normalColor = (Color)normal;
@@ -29,6 +30,9 @@ namespace MelonPrefManager.Runtime.Mono
 
             if (pressed != null)
                 colors.pressedColor = (Color)pressed;
+
+            if (disabled != null)
+                colors.disabledColor = (Color)disabled;
 
             return colors;
         }

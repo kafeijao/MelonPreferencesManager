@@ -29,29 +29,13 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         public override void RefreshUIForValue()
         {
-            //m_baseLabel.text = SignatureHighlighter.ParseFullSyntax(FallbackType, false);
             m_valueInput.text = Value.ToString();
-
-            var type = Value.GetType();
-            if (type == typeof(float)
-                || type == typeof(double)
-                || type == typeof(decimal))
-            {
-                m_valueInput.characterValidation = InputField.CharacterValidation.Decimal;
-            }
-            else
-            {
-                m_valueInput.characterValidation = InputField.CharacterValidation.Integer;
-            }
-
-            //if (!m_applyBtn.gameObject.activeSelf)
-            //    m_applyBtn.gameObject.SetActive(true);
 
             if (!m_valueInput.gameObject.activeSelf)
                 m_valueInput.gameObject.SetActive(true);
         }
 
-        public MethodInfo ParseMethod => m_parseMethod ?? (m_parseMethod = Value.GetType().GetMethod("Parse", new Type[] { typeof(string) }));
+        public MethodInfo ParseMethod => m_parseMethod ??= Value.GetType().GetMethod("Parse", new Type[] { typeof(string) });
         private MethodInfo m_parseMethod;
 
         internal void SetValueFromInput()
@@ -59,7 +43,7 @@ namespace MelonPrefManager.UI.InteractiveValues
             try
             {
                 Value = ParseMethod.Invoke(null, new object[] { m_valueInput.text });
-                Owner.SetValue();
+                Owner.SetValueFromIValue();
                 RefreshUIForValue();
             }
             catch //(Exception e)
@@ -85,6 +69,12 @@ namespace MelonPrefManager.UI.InteractiveValues
                 SetValueFromInput();
             });
 
+            var type = Value.GetType();
+            if (type == typeof(float) || type == typeof(double) || type == typeof(decimal))
+                m_valueInput.characterValidation = InputField.CharacterValidation.Decimal;
+            else
+                m_valueInput.characterValidation = InputField.CharacterValidation.Integer;
+
             if (Owner.RefConfig.Validator is IValueRange range)
             {
                 var sliderObj = UIFactory.CreateSlider(m_mainContent, "ValueSlider", out Slider slider);
@@ -102,7 +92,8 @@ namespace MelonPrefManager.UI.InteractiveValues
                         return;
 
                     Value = Convert.ChangeType(val, FallbackType);
-                    Owner.SetValue();
+                    Owner.SetValueFromIValue();
+                    m_valueInput.text = f.ToString();
                 });
 
                 m_valueInput.onValueChanged.AddListener((string val) => 

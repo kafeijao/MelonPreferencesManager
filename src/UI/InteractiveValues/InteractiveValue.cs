@@ -155,13 +155,13 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         #region UI CONSTRUCTION
 
-        internal GameObject m_mainContentParent;
-        internal GameObject m_subContentParent;
+        protected internal GameObject m_mainContentParent;
+        protected internal GameObject m_subContentParent;
 
-        internal GameObject m_mainContent;
+        protected internal GameObject m_mainContent;
 
-        internal Button m_subExpandBtn;
-        internal bool m_subContentConstructed;
+        protected internal Button m_subExpandBtn;
+        protected internal bool m_subContentConstructed;
 
         public virtual void ConstructUI(GameObject parent)
         {
@@ -180,6 +180,7 @@ namespace MelonPrefManager.UI.InteractiveValues
             {
                 m_subExpandBtn = UIFactory.CreateButton(m_mainContent, "ExpandSubcontentButton", 
                     "▲ Expand to edit", ToggleSubcontent, new Color(0.3f, 0.3f, 0.3f));
+
                 UIFactory.SetLayoutElement(m_subExpandBtn.gameObject, minHeight: 25, minWidth: 120, flexibleWidth: 0, flexibleHeight: 0);
             }
         }

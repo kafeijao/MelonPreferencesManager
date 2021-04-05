@@ -121,7 +121,7 @@ namespace MelonPrefManager.UI.InteractiveValues
                     }
                 }
 
-                Owner.SetValue();
+                Owner.SetValueFromIValue();
 
                 m_valueInput.textComponent.color = Color.white;
             }
@@ -180,17 +180,17 @@ namespace MelonPrefManager.UI.InteractiveValues
             m_placeholderText.supportRichText = false;
             m_valueInput.textComponent.supportRichText = false;
 
-            m_valueInput.onValueChanged.AddListener((string val) =>
-            {
-                hiddenText.text = val ?? "";
-                LayoutRebuilder.ForceRebuildLayoutImmediate(Owner.m_mainRect);
-                SetValueFromInput();
-            });
-
             //var apply = UIFactory.CreateButton(m_mainContent, "ApplyButton", "Apply", SetValueFromInput, new Color(0.2f, 0.2f, 0.2f));
             //UIFactory.SetLayoutElement(apply.gameObject, minWidth: 50, minHeight: 25, flexibleWidth: 0);
 
-            RefreshUIForValue();
+            OnValueUpdated();
+
+            m_valueInput.onValueChanged.AddListener((string val) =>
+            {
+                hiddenText.text = val ?? "";
+                LayoutRebuilder.ForceRebuildLayoutImmediate(Owner.ContentRect);
+                SetValueFromInput();
+            });
         }
     }
 }

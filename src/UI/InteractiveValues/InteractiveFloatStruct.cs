@@ -171,7 +171,7 @@ namespace MelonPrefManager.UI.InteractiveValues
                     {
                         float f = float.Parse(val);
                         Value = StructInfo.SetValue(ref this.Value, index, f);
-                        Owner.SetValue();
+                        Owner.SetValueFromIValue();
                     }
                     catch { }
                 });

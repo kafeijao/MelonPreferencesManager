@@ -60,7 +60,7 @@ namespace MelonPrefManager.UI.InteractiveValues
         internal void SetValueFromInput()
         {
             Value = m_valueInput.text;
-            Owner.SetValue();
+            Owner.SetValueFromIValue();
             //RefreshUIForValue();
         }
 
@@ -107,7 +107,7 @@ namespace MelonPrefManager.UI.InteractiveValues
             m_valueInput.onValueChanged.AddListener((string val) =>
             {
                 hiddenText.text = val ?? "";
-                LayoutRebuilder.ForceRebuildLayoutImmediate(Owner.m_mainRect);
+                LayoutRebuilder.ForceRebuildLayoutImmediate(Owner.ContentRect);
                 SetValueFromInput();
             });
 

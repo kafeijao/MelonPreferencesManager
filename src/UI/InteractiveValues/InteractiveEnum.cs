@@ -101,7 +101,7 @@ namespace MelonPrefManager.UI.InteractiveValues
             if (value != null)
             {
                 Value = value;
-                Owner.SetValue();
+                Owner.SetValueFromIValue();
                 RefreshUIForValue();
             }
         }
@@ -120,6 +120,11 @@ namespace MelonPrefManager.UI.InteractiveValues
             var dropdownObj = UIFactory.CreateDropdown(m_mainContent, out m_dropdown, "", 14, null);
             UIFactory.SetLayoutElement(dropdownObj, minWidth: 400, minHeight: 25);
 
+            m_dropdown.onValueChanged.AddListener((int val) =>
+            {
+                SetValueFromDropdown();
+            });
+
             foreach (var kvp in m_values)
             {
                 var opt = new Dropdown.OptionData
@@ -130,19 +135,15 @@ namespace MelonPrefManager.UI.InteractiveValues
                 m_dropdownOptions.Add(kvp.Value, opt);
             }
 
-            m_dropdown.onValueChanged.AddListener((int val) =>
-            {
-                SetValueFromDropdown();
-            });
+            //// filter input
 
-            //m_dropdownText = m_dropdown.transform.Find("Label").GetComponent<Text>();
-
-            //// apply button
-
-            //var apply = UIFactory.CreateButton(m_mainContent, "ApplyButton", "Apply", SetValueFromDropdown, new Color(0.3f, 0.3f, 0.3f));
-            //UIFactory.SetLayoutElement(apply.gameObject, minHeight: 25, minWidth: 50);
-
-            //RefreshUIForValue();
+            //var filterObj = UIFactory.CreateInputField(m_mainContent, "FilterInput", "Filter values...");
+            //UIFactory.SetLayoutElement(filterObj, minHeight: 25, flexibleWidth: 999);
+            //var filter = filterObj.GetComponent<InputField>();
+            //filter.onValueChanged.AddListener((string val) =>
+            //{
+            //    PopulateDropdown(val);
+            //});
         }
     }
 }

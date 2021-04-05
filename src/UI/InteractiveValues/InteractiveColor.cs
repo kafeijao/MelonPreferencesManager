@@ -140,7 +140,7 @@ namespace MelonPrefManager.UI.InteractiveValues
                 }
                 Value = _color;
                 m_colorImage.color = _color;
-                Owner.SetValue();
+                Owner.SetValueFromIValue();
             }
 
             float GetValueFromColor()

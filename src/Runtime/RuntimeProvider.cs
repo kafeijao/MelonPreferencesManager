@@ -33,6 +33,7 @@ namespace MelonPrefManager.Runtime
 
         // Unity API handlers
 
-        public abstract ColorBlock SetColorBlock(ColorBlock colors, Color? normal = null, Color? highlighted = null, Color? pressed = null);
+        public abstract ColorBlock SetColorBlock(ColorBlock colors, Color? normal = null, Color? highlighted = null, Color? pressed = null,
+            Color? disabled = null);
     }
 }

@@ -29,7 +29,8 @@ namespace MelonPrefManager.Runtime.Il2Cpp
 
         internal static bool? s_doPropertiesExist;
 
-        public override ColorBlock SetColorBlock(ColorBlock colors, Color? normal = null, Color? highlighted = null, Color? pressed = null)
+        public override ColorBlock SetColorBlock(ColorBlock colors, Color? normal = null, Color? highlighted = null, Color? pressed = null,
+            Color? disabled = null)
         {
             if (s_doPropertiesExist == null)
             {
@@ -49,6 +50,8 @@ namespace MelonPrefManager.Runtime.Il2Cpp
                     ReflectionUtility.GetPropertyInfo(typeof(ColorBlock), "pressedColor").SetValue(boxed, (Color)pressed);
                 if (highlighted != null)
                     ReflectionUtility.GetPropertyInfo(typeof(ColorBlock), "highlightedColor").SetValue(boxed, (Color)highlighted);
+                if (disabled != null)
+                    ReflectionUtility.GetPropertyInfo(typeof(ColorBlock), "disabledColor").SetValue(boxed, (Color)disabled);
             }
             else if (s_doPropertiesExist == false)
             {
@@ -58,6 +61,8 @@ namespace MelonPrefManager.Runtime.Il2Cpp
                     ReflectionUtility.GetFieldInfo(typeof(ColorBlock), "m_PressedColor").SetValue(boxed, (Color)pressed);
                 if (highlighted != null)
                     ReflectionUtility.GetFieldInfo(typeof(ColorBlock), "m_HighlightedColor").SetValue(boxed, (Color)highlighted);
+                if (disabled != null)
+                    ReflectionUtility.GetFieldInfo(typeof(ColorBlock), "m_DisabledColor").SetValue(boxed, (Color)disabled);
             }
 
             colors = (ColorBlock)boxed;

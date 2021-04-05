@@ -24,7 +24,7 @@ namespace MelonPrefManager
         public const string GUID = "com.sinai.melonprefmanager";
         public const string NAME = "MelonPreferencesManager";
         public const string AUTHOR = "Sinai";
-        public const string VERSION = "0.3.1";
+        public const string VERSION = "0.4.0";
 
         public static PrefManagerMod Instance { get; private set; }
 
@@ -57,7 +57,7 @@ namespace MelonPrefManager
 
             ////  ~~~~~~~~~~~~~~~~ TEST CONFIG ~~~~~~~~~~~~~~~~
 
-            //MelonPreferences.Mapper.RegisterMapper(TestReader, TestWriter);
+            ////MelonPreferences.Mapper.RegisterMapper(TestReader, TestWriter);
 
             //var testCtg = MelonPreferences.CreateCategory("TestConfig");
 
@@ -71,7 +71,7 @@ namespace MelonPrefManager
             //testCtg.CreateEntry("Vector3", Vector3.down, description: "Vector/Quaternion/etc use a simple struct editor");
             //testCtg.CreateEntry("Quaternion", Quaternion.identity);
             //testCtg.CreateEntry("Flags", BindingFlags.Public, description: "Enums with [Flags] attribute use a multi-toggle");
-            //testCtg.CreateEntry("TestCustom", new TestConfigClass() { myString = "helloworld", myInt = 69 }, null, "Testing a custom type");
+            ////testCtg.CreateEntry("TestCustom", new TestConfigClass() { myString = "helloworld", myInt = 69 }, null, "Testing a custom type");
         }
 
         //public class TestConfigClass

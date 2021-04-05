@@ -23,7 +23,7 @@ namespace MelonPrefManager.UI
             internal Button listButton;
             internal GameObject contentObj;
 
-            internal IEnumerable<GameObject> privateConfigObjs 
+            internal IEnumerable<GameObject> AdvancedConfigs 
                 => Prefs.Where(it => it.IsHidden).Select(it => it.content);
         }
 
@@ -43,15 +43,47 @@ namespace MelonPrefManager.UI
         internal static GameObject CategoryListViewport;
         internal static GameObject ConfigEditorViewport;
 
-        internal static string Filter => _currentFilter ?? "";
-        private static string _currentFilter;
+        internal static string Filter => currentFilter ?? "";
+        private static string currentFilter;
+
+        private static readonly HashSet<CachedConfigEntry> editingEntries = new HashSet<CachedConfigEntry>();
+        private static Button saveButton;
+
+        public static void OnEntryEdit(CachedConfigEntry entry)
+        {
+            if (!editingEntries.Contains(entry))
+                editingEntries.Add(entry);
+
+            if (!saveButton.interactable)
+                saveButton.interactable = true;
+        }
+
+        public static void OnEntryUndo(CachedConfigEntry entry)
+        {
+            if (editingEntries.Contains(entry))
+                editingEntries.Remove(entry);
+
+            if (!editingEntries.Any())
+                saveButton.interactable = false;
+        }
+
+        public static void SavePreferences()
+        {
+            MelonPreferences.Save();
+
+            foreach (var entry in editingEntries)
+                entry.OnSaveOrUndo();
+
+            editingEntries.Clear();
+            saveButton.interactable = false;
+        }
 
         // called by UIManager.Init
         internal static void Create()
         {
             if (Instance != null)
             {
-                PrefManagerMod.LogWarning("An instance of MainMenu already exists, cannot create another!");
+                PrefManagerMod.LogWarning("An instance of PreferencesEditor already exists, cannot create another!");
                 return;
             }
 
@@ -80,9 +112,6 @@ namespace MelonPrefManager.UI
 
                 if (info.isCompletelyHidden)
                     info.listButton.gameObject.SetActive(ShowHiddenConfigs);
-            
-                //foreach (var hiddenCfg in info.privateConfigObjs)
-                //    hiddenCfg.SetActive(ShowHiddenConfigs);
             }
 
             if (_currentCategory != null && _currentCategory.isCompletelyHidden)
@@ -93,7 +122,7 @@ namespace MelonPrefManager.UI
 
         public static void FilterConfigs(string search)
         {
-            _currentFilter = search.ToLower();
+            currentFilter = search.ToLower();
             RefreshFilter();
         }
 
@@ -104,7 +133,7 @@ namespace MelonPrefManager.UI
 
             foreach (var entry in _currentCategory.Prefs)
             {
-                bool val = (string.IsNullOrEmpty(_currentFilter) || entry.RefEntry.DisplayName.ToLower().Contains(_currentFilter))
+                bool val = (string.IsNullOrEmpty(currentFilter) || entry.RefEntry.DisplayName.ToLower().Contains(currentFilter))
                            && (!entry.IsHidden || ShowHiddenConfigs);
                 entry.content.SetActive(val);
             }
@@ -162,6 +191,8 @@ namespace MelonPrefManager.UI
 
             ConstructToolbar(mainContent);
 
+            ConstructSaveButton(mainContent);
+
             ConstructEditorViewport(mainContent);
         }
 
@@ -217,9 +248,17 @@ namespace MelonPrefManager.UI
             UIFactory.SetLayoutElement(inputField, flexibleWidth: 9999);
             var input = inputField.GetComponent<InputField>();
             input.onValueChanged.AddListener(FilterConfigs);
+        }
 
-            //var saveBtn = UIFactory.CreateButton(toolbarGroup, "SaveButton", "Save Preferences", MelonPreferences.Save, new Color(0.1f, 0.4f, 0.1f));
-            //UIFactory.SetLayoutElement(saveBtn.gameObject, minWidth: 150, minHeight: 25);
+        private void ConstructSaveButton(GameObject mainContent)
+        {
+            saveButton = UIFactory.CreateButton(mainContent, "SaveButton", "Save Preferences", SavePreferences);
+            UIFactory.SetLayoutElement(saveButton.gameObject, minHeight: 35, flexibleWidth: 9999);
+            var colors = new ColorBlock() { colorMultiplier = 1 };
+            saveButton.colors = RuntimeProvider.Instance.SetColorBlock(colors, new Color(0.1f, 0.3f, 0.1f),
+                new Color(0.2f, 0.5f, 0.2f), new Color(0.1f, 0.2f, 0.1f), new Color(0.2f, 0.2f, 0.2f));
+
+            saveButton.interactable = false;
         }
 
         private void ConstructEditorViewport(GameObject mainContent)
@@ -285,7 +324,7 @@ namespace MelonPrefManager.UI
                         var cache = new CachedConfigEntry(pref, content);
                         cache.Enable();
 
-                        var obj = cache.m_mainContent;
+                        var obj = cache.m_UIroot;
 
                         info.Prefs.Add(new PrefInfo()
                         {
