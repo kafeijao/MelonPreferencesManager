@@ -189,9 +189,9 @@ namespace MelonPrefManager.UI
 
             ConstructTitleBar(mainContent);
 
-            ConstructToolbar(mainContent);
-
             ConstructSaveButton(mainContent);
+
+            ConstructToolbar(mainContent);
 
             ConstructEditorViewport(mainContent);
         }
@@ -230,9 +230,20 @@ namespace MelonPrefManager.UI
             hideText.resizeTextMaxSize = 14;
         }
 
+        private void ConstructSaveButton(GameObject mainContent)
+        {
+            saveButton = UIFactory.CreateButton(mainContent, "SaveButton", "Save Preferences", SavePreferences);
+            UIFactory.SetLayoutElement(saveButton.gameObject, minHeight: 35, flexibleWidth: 9999);
+            var colors = new ColorBlock() { colorMultiplier = 1 };
+            saveButton.colors = RuntimeProvider.Instance.SetColorBlock(colors, new Color(0.1f, 0.3f, 0.1f),
+                new Color(0.2f, 0.5f, 0.2f), new Color(0.1f, 0.2f, 0.1f), new Color(0.2f, 0.2f, 0.2f));
+
+            saveButton.interactable = false;
+        }
+
         private void ConstructToolbar(GameObject parent)
         {
-            var toolbarGroup = UIFactory.CreateHorizontalGroup(parent, "Toolbar", false, true, true, true, 4, new Vector4(3, 3, 3, 3), 
+            var toolbarGroup = UIFactory.CreateHorizontalGroup(parent, "Toolbar", false, true, true, true, 4, new Vector4(3, 3, 3, 3),
                 new Color(0.1f, 0.1f, 0.1f));
 
             var toggleObj = UIFactory.CreateToggle(toolbarGroup, "HiddenConfigsToggle", out Toggle toggle, out Text toggleText);
@@ -248,17 +259,6 @@ namespace MelonPrefManager.UI
             UIFactory.SetLayoutElement(inputField, flexibleWidth: 9999);
             var input = inputField.GetComponent<InputField>();
             input.onValueChanged.AddListener(FilterConfigs);
-        }
-
-        private void ConstructSaveButton(GameObject mainContent)
-        {
-            saveButton = UIFactory.CreateButton(mainContent, "SaveButton", "Save Preferences", SavePreferences);
-            UIFactory.SetLayoutElement(saveButton.gameObject, minHeight: 35, flexibleWidth: 9999);
-            var colors = new ColorBlock() { colorMultiplier = 1 };
-            saveButton.colors = RuntimeProvider.Instance.SetColorBlock(colors, new Color(0.1f, 0.3f, 0.1f),
-                new Color(0.2f, 0.5f, 0.2f), new Color(0.1f, 0.2f, 0.1f), new Color(0.2f, 0.2f, 0.2f));
-
-            saveButton.interactable = false;
         }
 
         private void ConstructEditorViewport(GameObject mainContent)
@@ -283,7 +283,7 @@ namespace MelonPrefManager.UI
             btnColors = RuntimeProvider.Instance.SetColorBlock(btnColors, _normalDisabledColor, new Color(0.7f, 1f, 0.7f),
                 new Color(0, 0.25f, 0));
 
-            foreach (var ctg in MelonPreferences.Categories)
+            foreach (var ctg in MelonPreferences.Categories.OrderBy(it => it.DisplayName))
             {
                 if (_categoryInfos.ContainsKey(ctg.Identifier))
                     continue;
