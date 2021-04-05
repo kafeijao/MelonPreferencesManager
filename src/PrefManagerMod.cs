@@ -24,9 +24,14 @@ namespace MelonPrefManager
         public const string GUID = "com.sinai.melonprefmanager";
         public const string NAME = "MelonPreferencesManager";
         public const string AUTHOR = "Sinai";
-        public const string VERSION = "0.2.0";
+        public const string VERSION = "0.3.0";
 
         public static PrefManagerMod Instance { get; private set; }
+
+        // Internal config
+        internal const string CTG_ID = "MelonPreferencesManager";
+        internal static MelonPreferences_Category INTERNAL_CATEGORY;
+        public static MelonPreferences_Entry<KeyCode> Main_Menu_Toggle;
 
         public override void OnApplicationStart()
         {
@@ -44,13 +49,6 @@ namespace MelonPrefManager
             UIManager.Update();
         }
 
-        #region INTERNAL CONFIG
-
-        internal const string CTG_ID = "MelonPreferencesManager";
-        internal static MelonPreferences_Category INTERNAL_CATEGORY;
-
-        public static MelonPreferences_Entry<KeyCode> Main_Menu_Toggle;
-
         public static void InitConfig()
         {
             INTERNAL_CATEGORY = MelonPreferences.CreateCategory(CTG_ID, null);
@@ -60,18 +58,20 @@ namespace MelonPrefManager
             ////  ~~~~~~~~~~~~~~~~ TEST CONFIG ~~~~~~~~~~~~~~~~
 
             //MelonPreferences.Mapper.RegisterMapper(TestReader, TestWriter);
-            //UI.InteractiveValues.InteractiveValue.RegisterIValueType<TestInteractiveValue>();
+            ////UI.InteractiveValues.InteractiveValue.RegisterIValueType<TestInteractiveValue>();
 
             //var testCtg = MelonPreferences.CreateCategory("TestConfig");
 
             //testCtg.CreateEntry("Bool", false, description: "Descriptions are supported");
             //testCtg.CreateEntry("Byte", (byte)0xD, description: "Descriptions with new\r\nlines are supported.");
-            //testCtg.CreateEntry("Int", 32, description: "Hello world!");
-            //testCtg.CreateEntry("Float", 666f, description: "Example of a float value range", validator: new ValueRange<float>(0, 1000f));
-            //testCtg.CreateEntry("KeyCode", KeyCode.Dollar, description: "Dropdown example");
-            //testCtg.CreateEntry("String", "Hello, world!", description: "String example");
-            //testCtg.CreateEntry("Color", Color.magenta, description: "Color example");
-            //testCtg.CreateEntry("Vector3", Vector3.down, description: "Vector3 example");
+            //testCtg.CreateEntry("Int", 32, description: "All primitive number types are supported");
+            //testCtg.CreateEntry("Float", 666f, description: "This setting has a ValueRange of 0 to 1000", validator: new ValueRange<float>(0, 1000f));
+            //testCtg.CreateEntry("KeyCode", KeyCode.Dollar, description: "Enums will be displayed as a dropdown");
+            //testCtg.CreateEntry("String", "Hello, world!", description: "Strings use a basic input field");
+            //testCtg.CreateEntry("Color", Color.magenta, description: "Colors have a special color picker");
+            //testCtg.CreateEntry("Vector3", Vector3.down, description: "Vector/Quaternion/etc use a simple struct editor");
+            //testCtg.CreateEntry("Quaternion", Quaternion.identity);
+            //testCtg.CreateEntry("Flags", BindingFlags.Public, description: "Enums with [Flags] attribute use a multi-toggle");
             //testCtg.CreateEntry("TestCustom", new TestConfigClass() { myString = "helloworld", myInt = 69 }, null, "Testing a custom type");
         }
 
@@ -96,26 +96,6 @@ namespace MelonPrefManager
         //        myInt = int.Parse(arr[1]),
         //    };
         //}
-
-        //public class TestInteractiveValue : UI.InteractiveValues.InteractiveValue
-        //{
-        //    public TestInteractiveValue(object value, Type valueType) : base(value, valueType)
-        //    {
-        //    }
-
-        //    public override bool SupportsType(Type type)
-        //        => type == typeof(TestConfigClass);
-
-        //    public override void ConstructUI(GameObject parent, GameObject subGroup)
-        //    {
-        //        base.ConstructUI(parent, subGroup);
-
-        //        var lbl = UIFactory.CreateLabel(m_mainContent, "testlbl", "Hello world!", TextAnchor.MiddleLeft);
-        //        UIFactory.SetLayoutElement(lbl.gameObject, minWidth: 200, minHeight: 25);
-        //    }
-        //}
-
-        #endregion
 
         #region LOGGING HELPERS
 

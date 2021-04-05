@@ -27,9 +27,9 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         public override void RefreshUIForValue()
         {
-            GetDefaultLabel(false);
+            //GetDefaultLabel(false);
 
-            m_baseLabel.text = m_richValueType;
+            //m_baseLabel.text = m_richValueType;
 
             if (!m_hiddenObj.gameObject.activeSelf)
                 m_hiddenObj.gameObject.SetActive(true);
@@ -53,8 +53,8 @@ namespace MelonPrefManager.UI.InteractiveValues
                 m_placeholderText.text = s;
             }
 
-            m_labelLayout.minWidth = 50;
-            m_labelLayout.flexibleWidth = 0;
+            //m_labelLayout.minWidth = 50;
+            //m_labelLayout.flexibleWidth = 0;
         }
 
         internal void SetValueFromInput()
@@ -65,21 +65,21 @@ namespace MelonPrefManager.UI.InteractiveValues
         }
 
         // for the default label
-        internal LayoutElement m_labelLayout;
+        // internal LayoutElement m_labelLayout;
 
         // for input
         internal InputField m_valueInput;
         internal GameObject m_hiddenObj;
         internal Text m_placeholderText;
 
-        public override void ConstructUI(GameObject parent, GameObject subGroup)
+        public override void ConstructUI(GameObject parent)//, GameObject subGroup)
         {
-            base.ConstructUI(parent, subGroup);
+            base.ConstructUI(parent);//, subGroup);
 
-            GetDefaultLabel(false);
-            m_richValueType = SignatureHighlighter.ParseFullSyntax(FallbackType, false);
+            //GetDefaultLabel(false);
+            //m_richValueType = SignatureHighlighter.ParseFullSyntax(FallbackType, false);
 
-            m_labelLayout = m_baseLabel.gameObject.GetComponent<LayoutElement>();
+            //m_labelLayout = m_baseLabel.gameObject.GetComponent<LayoutElement>();
 
             m_hiddenObj = UIFactory.CreateLabel(m_mainContent, "HiddenLabel", "", TextAnchor.MiddleLeft).gameObject;
             m_hiddenObj.SetActive(false);

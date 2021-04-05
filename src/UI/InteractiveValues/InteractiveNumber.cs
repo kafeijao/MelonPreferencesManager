@@ -29,7 +29,7 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         public override void RefreshUIForValue()
         {
-            m_baseLabel.text = SignatureHighlighter.ParseFullSyntax(FallbackType, false);
+            //m_baseLabel.text = SignatureHighlighter.ParseFullSyntax(FallbackType, false);
             m_valueInput.text = Value.ToString();
 
             var type = Value.GetType();
@@ -71,13 +71,13 @@ namespace MelonPrefManager.UI.InteractiveValues
         internal InputField m_valueInput;
         //internal Button m_applyBtn;
 
-        public override void ConstructUI(GameObject parent, GameObject subGroup)
+        public override void ConstructUI(GameObject parent)//, GameObject subGroup)
         {
-            base.ConstructUI(parent, subGroup);
+            base.ConstructUI(parent);//, subGroup);
 
-            var labelLayout = m_baseLabel.gameObject.GetComponent<LayoutElement>();
-            labelLayout.minWidth = 50;
-            labelLayout.flexibleWidth = 0;
+            //var labelLayout = m_baseLabel.gameObject.GetComponent<LayoutElement>();
+            //labelLayout.minWidth = 50;
+            //labelLayout.flexibleWidth = 0;
 
             var inputObj = UIFactory.CreateInputField(m_mainContent, "InteractiveNumberInput", "...");
             UIFactory.SetLayoutElement(inputObj, minWidth: 120, minHeight: 25, flexibleWidth: 0);

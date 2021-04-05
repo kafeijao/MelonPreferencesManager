@@ -12,8 +12,8 @@ namespace MelonPrefManager.UI.InteractiveValues
     {
         public InteractiveBool(object value, Type valueType) : base(value, valueType) { }
 
-        public override bool HasSubContent => false;
-        public override bool SubContentWanted => false;
+        //public override bool HasSubContent => false;
+        //public override bool SubContentWanted => false;
 
         internal Toggle m_toggle;
         //internal Button m_applyBtn;
@@ -28,9 +28,9 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         public override void RefreshUIForValue()
         {
-            GetDefaultLabel();
+            //GetDefaultLabel();
 
-            m_baseLabel.text = DefaultLabel;
+            //m_baseLabel.text = DefaultLabel;
 
             var val = (bool)Value;
 
@@ -47,7 +47,7 @@ namespace MelonPrefManager.UI.InteractiveValues
                 ? "6bc981"  // on
                 : "c96b6b"; // off
 
-            m_baseLabel.text = $"<color=#{color}>{val}</color>";
+            labelText.text = $"<color=#{color}>{val}</color>";
         }
 
         internal void OnToggleValueChanged(bool val)
@@ -57,19 +57,26 @@ namespace MelonPrefManager.UI.InteractiveValues
             Owner.SetValue();
         }
 
-        public override void ConstructUI(GameObject parent, GameObject subGroup)
-        {
-            base.ConstructUI(parent, subGroup);
+        private Text labelText;
 
-            var baseLayout = m_baseLabel.gameObject.GetComponent<LayoutElement>();
-            baseLayout.flexibleWidth = 0;
-            baseLayout.minWidth = 50;
+        public override void ConstructUI(GameObject parent)//, GameObject subGroup)
+        {
+            base.ConstructUI(parent);//, subGroup);
+
+            //var baseLayout = m_baseLabel.gameObject.GetComponent<LayoutElement>();
+            //baseLayout.flexibleWidth = 0;
+            //baseLayout.minWidth = 50;
 
             var toggleObj = UIFactory.CreateToggle(m_mainContent, "InteractiveBoolToggle", out m_toggle, out _, new Color(0.1f, 0.1f, 0.1f));
             UIFactory.SetLayoutElement(toggleObj, minWidth: 24);
             m_toggle.onValueChanged.AddListener(OnToggleValueChanged);
 
-            m_baseLabel.transform.SetAsLastSibling();
+            labelText = UIFactory.CreateLabel(m_mainContent, "TrueFalseLabel", "False", TextAnchor.MiddleLeft);
+            UIFactory.SetLayoutElement(labelText.gameObject, minWidth: 60, minHeight: 25);
+
+            RefreshUIForValue();
+
+            // m_baseLabel.transform.SetAsLastSibling();
 
             //m_applyBtn = UIFactory.CreateButton(m_mainContent,
             //    "ApplyButton",

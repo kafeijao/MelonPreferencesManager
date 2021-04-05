@@ -43,13 +43,6 @@ namespace MelonPrefManager.Input
         public BaseInputModule UIModule => m_inputModule;
         internal StandaloneInputModule m_inputModule;
 
-        public PointerEventData InputPointerEvent =>
-#if CPP
-            m_inputModule.m_InputPointerEvent;
-#else
-            null;
-#endif
-
         public void AddUIInputModule()
         {
             m_inputModule = UIManager.CanvasRoot.gameObject.AddComponent<StandaloneInputModule>();

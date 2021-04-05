@@ -43,8 +43,7 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         public override void RefreshUIForValue()
         {
-            GetDefaultLabel();
-            m_baseLabel.text = DefaultLabel;
+            base.RefreshUIForValue();
 
             if (m_subContentConstructed)
             {
@@ -81,9 +80,9 @@ namespace MelonPrefManager.UI.InteractiveValues
             RefreshUIForValue();
         }
 
-        public override void ConstructUI(GameObject parent, GameObject subGroup)
+        public override void ConstructUI(GameObject parent)//, GameObject subGroup)
         {
-            base.ConstructUI(parent, subGroup);
+            base.ConstructUI(parent);//, subGroup);
         }
 
         public override void ConstructSubcontent()
@@ -92,11 +91,6 @@ namespace MelonPrefManager.UI.InteractiveValues
 
             var groupObj = UIFactory.CreateVerticalGroup(m_subContentParent, "InteractiveFlagsContent", false, true, true, true, 5,
                    new Vector4(3, 3, 3, 3), new Color(1, 1, 1, 0));
-
-            //// apply button
-
-            //var apply = UIFactory.CreateButton(groupObj, "ApplyButton", "Apply", SetValueFromToggles, new Color(0.3f, 0.3f, 0.3f));
-            //UIFactory.SetLayoutElement(apply.gameObject, minWidth: 50, minHeight: 25);
 
             // toggles
 
@@ -117,6 +111,7 @@ namespace MelonPrefManager.UI.InteractiveValues
             {
                 m_enabledFlags[index] = val;
                 SetValueFromToggles();
+                RefreshUIForValue();
             });
 
             text.text = value.Value;

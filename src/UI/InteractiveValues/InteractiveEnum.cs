@@ -84,7 +84,7 @@ namespace MelonPrefManager.UI.InteractiveValues
         {
             base.RefreshUIForValue();
 
-            m_baseLabel.text = "";
+            //m_baseLabel.text = "";
 
             string key = Value.ToString();
             if (m_dropdownOptions.ContainsKey(key))
@@ -109,11 +109,11 @@ namespace MelonPrefManager.UI.InteractiveValues
         internal Dropdown m_dropdown;
         //internal Text m_dropdownText;
 
-        public override void ConstructUI(GameObject parent, GameObject subGroup)
+        public override void ConstructUI(GameObject parent)//, GameObject subGroup)
         {
-            base.ConstructUI(parent, subGroup);
+            base.ConstructUI(parent);//, subGroup);
 
-            UIFactory.SetLayoutElement(m_baseLabel.gameObject, minWidth: 0, flexibleWidth: 0);
+            //UIFactory.SetLayoutElement(m_baseLabel.gameObject, minWidth: 0, flexibleWidth: 0);
 
             // dropdown
 

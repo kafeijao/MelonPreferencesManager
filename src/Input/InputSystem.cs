@@ -2,8 +2,11 @@
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using MelonPrefManager.UI;
 using System.Collections.Generic;
+using MelonPrefManager.UI;
+#if CPP
+using UnhollowerRuntimeLib;
+#endif
 
 namespace MelonPrefManager.Input
 {
@@ -11,8 +14,6 @@ namespace MelonPrefManager.Input
     {
         public InputSystem()
         {
-            //MPM.Log("Initializing new InputSystem support...");
-
             m_kbCurrentProp = TKeyboard.GetProperty("current");
             m_kbIndexer = TKeyboard.GetProperty("Item", new Type[] { TKey });
 
@@ -32,36 +33,36 @@ namespace MelonPrefManager.Input
                                       .GetMethod("ReadValue");
         }
 
-        public static Type TKeyboard => m_tKeyboard ?? (m_tKeyboard = ReflectionUtility.GetTypeByName("UnityEngine.InputSystem.Keyboard"));
+        public static Type TKeyboard => m_tKeyboard ??= ReflectionUtility.GetTypeByName("UnityEngine.InputSystem.Keyboard");
         private static Type m_tKeyboard;
 
-        public static Type TMouse => m_tMouse ?? (m_tMouse = ReflectionUtility.GetTypeByName("UnityEngine.InputSystem.Mouse"));
+        public static Type TMouse => m_tMouse ??= ReflectionUtility.GetTypeByName("UnityEngine.InputSystem.Mouse");
         private static Type m_tMouse;
 
-        public static Type TKey => m_tKey ?? (m_tKey = ReflectionUtility.GetTypeByName("UnityEngine.InputSystem.Key"));
+        public static Type TKey => m_tKey ??= ReflectionUtility.GetTypeByName("UnityEngine.InputSystem.Key");
         private static Type m_tKey;
 
         private static PropertyInfo m_btnIsPressedProp;
         private static PropertyInfo m_btnWasPressedProp;
 
-        private static object CurrentKeyboard => m_currentKeyboard ?? (m_currentKeyboard = m_kbCurrentProp.GetValue(null, null));
+        private static object CurrentKeyboard => m_currentKeyboard ??= m_kbCurrentProp.GetValue(null, null);
         private static object m_currentKeyboard;
         private static PropertyInfo m_kbCurrentProp;
         private static PropertyInfo m_kbIndexer;
 
-        private static object CurrentMouse => m_currentMouse ?? (m_currentMouse = m_mouseCurrentProp.GetValue(null, null));
+        private static object CurrentMouse => m_currentMouse ??= m_mouseCurrentProp.GetValue(null, null);
         private static object m_currentMouse;
         private static PropertyInfo m_mouseCurrentProp;
 
-        private static object LeftMouseButton => m_lmb ?? (m_lmb = m_leftButtonProp.GetValue(CurrentMouse, null));
+        private static object LeftMouseButton => m_lmb ??= m_leftButtonProp.GetValue(CurrentMouse, null);
         private static object m_lmb;
         private static PropertyInfo m_leftButtonProp;
 
-        private static object RightMouseButton => m_rmb ?? (m_rmb = m_rightButtonProp.GetValue(CurrentMouse, null));
+        private static object RightMouseButton => m_rmb ??= m_rightButtonProp.GetValue(CurrentMouse, null);
         private static object m_rmb;
         private static PropertyInfo m_rightButtonProp;
 
-        private static object MousePositionInfo => m_pos ?? (m_pos = m_positionProp.GetValue(CurrentMouse, null));
+        private static object MousePositionInfo => m_pos ??= m_positionProp.GetValue(CurrentMouse, null);
         private static object m_pos;
         private static PropertyInfo m_positionProp;
         private static MethodInfo m_readVector2InputMethod;
@@ -108,63 +109,95 @@ namespace MelonPrefManager.Input
 
         public bool GetMouseButtonDown(int btn)
         {
-            switch (btn)
+            return btn switch
             {
-                case 0: return (bool)m_btnWasPressedProp.GetValue(LeftMouseButton, null);
-                case 1: return (bool)m_btnWasPressedProp.GetValue(RightMouseButton, null);
+                0 => (bool)m_btnWasPressedProp.GetValue(LeftMouseButton, null),
+                1 => (bool)m_btnWasPressedProp.GetValue(RightMouseButton, null),
                 // case 2: return (bool)_btnWasPressedProp.GetValue(MiddleMouseButton, null);
-                default: throw new NotImplementedException();
-            }
+                _ => throw new NotImplementedException(),
+            };
         }
 
         public bool GetMouseButton(int btn)
         {
-            switch (btn)
+            return btn switch
             {
-                case 0: return (bool)m_btnIsPressedProp.GetValue(LeftMouseButton, null);
-                case 1: return (bool)m_btnIsPressedProp.GetValue(RightMouseButton, null);
+                0 => (bool)m_btnIsPressedProp.GetValue(LeftMouseButton, null),
+                1 => (bool)m_btnIsPressedProp.GetValue(RightMouseButton, null),
                 // case 2: return (bool)_btnIsPressedProp.GetValue(MiddleMouseButton, null);
-                default: throw new NotImplementedException();
-            }
+                _ => throw new NotImplementedException(),
+            };
         }
 
         // UI Input
 
-        //public Type TInputSystemUIInputModule 
-        //    => m_tUIInputModule 
-        //    ?? (m_tUIInputModule = ReflectionHelpers.GetTypeByName("UnityEngine.InputSystem.UI.InputSystemUIInputModule"));
-        //internal Type m_tUIInputModule;
+        public Type TInputSystemUIInputModule
+            => m_tUIInputModule ??= ReflectionUtility.GetTypeByName("UnityEngine.InputSystem.UI.InputSystemUIInputModule");
+        internal Type m_tUIInputModule;
 
-        public BaseInputModule UIModule => null; // m_newInputModule;
-        //internal BaseInputModule m_newInputModule;
-
-        public PointerEventData InputPointerEvent => null;
+        public BaseInputModule UIModule => m_newInputModule;
+        internal BaseInputModule m_newInputModule;
 
         public void AddUIInputModule()
         {
-//            if (TInputSystemUIInputModule != null)
-//            {
-//#if CPP
-//                // m_newInputModule = UIManager.CanvasRoot.AddComponent(Il2CppType.From(TInputSystemUIInputModule)).TryCast<BaseInputModule>();
-//#else
-//                m_newInputModule = (BaseInputModule)UIManager.CanvasRoot.AddComponent(TInputSystemUIInputModule);
-//#endif
-//            }
-//            else
-//            {
-//                MPM.LogWarning("New input system: Could not find type by name 'UnityEngine.InputSystem.UI.InputSystemUIInputModule'");
-//            }
+            if (TInputSystemUIInputModule == null)
+            {
+                PrefManagerMod.LogWarning("Unable to find UI Input Module Type, Input will not work!");
+                return;
+            }
+
+            var assetType = ReflectionUtility.GetTypeByName("UnityEngine.InputSystem.InputActionAsset");
+#if CPP
+            m_newInputModule = UIManager.CanvasRoot.AddComponent(Il2CppType.From(TInputSystemUIInputModule)).TryCast<BaseInputModule>();
+            var asset = ScriptableObject.CreateInstance(Il2CppType.From(assetType));
+#else
+            m_newInputModule = (BaseInputModule)UIManager.CanvasRoot.AddComponent(TInputSystemUIInputModule);
+            var asset = ScriptableObject.CreateInstance(assetType);
+#endif
+            inputExtensions = ReflectionUtility.GetTypeByName("UnityEngine.InputSystem.InputActionSetupExtensions");
+
+            var addMap = inputExtensions.GetMethod("AddActionMap", new Type[] { assetType, typeof(string) });
+            var map = addMap.Invoke(null, new object[] { asset, "UI" });
+
+            CreateAction(map, "point", new[] { "<Mouse>/position" }, "point");
+            CreateAction(map, "click", new[] { "<Mouse>/leftButton" }, "leftClick");
+            CreateAction(map, "rightClick", new[] { "<Mouse>/rightButton" }, "rightClick");
+            CreateAction(map, "scrollWheel", new[] { "<Mouse>/scroll" }, "scrollWheel");
+
+            UI_Enable = map.GetType().GetMethod("Enable");
+            UI_Enable.Invoke(map, new object[0]);
+            UI_ActionMap = map;
+        }
+
+        private Type inputExtensions;
+        private object UI_ActionMap;
+        private MethodInfo UI_Enable;
+
+        private void CreateAction(object map, string actionName, string[] bindings, string propertyName)
+        {
+            var addAction = inputExtensions.GetMethod("AddAction");
+            var pointAction = addAction.Invoke(null, new object[] { map, actionName, default, null, null, null, null, null });
+
+            var inputActionType = pointAction.GetType();
+            var addBinding = inputExtensions.GetMethod("AddBinding",
+                new Type[] { inputActionType, typeof(string), typeof(string), typeof(string), typeof(string) });
+
+            foreach (string binding in bindings)
+                addBinding.Invoke(null, new object[] { pointAction, binding, null, null, null });
+
+            var inputRef = ReflectionUtility.GetTypeByName("UnityEngine.InputSystem.InputActionReference")
+                            .GetMethod("Create")
+                            .Invoke(null, new object[] { pointAction });
+
+            TInputSystemUIInputModule
+                .GetProperty(propertyName)
+                .SetValue(m_newInputModule, inputRef, null);
         }
 
         public void ActivateModule()
         {
-//#if CPP
-//            // m_newInputModule.ActivateModule();
-//#else
-//            m_newInputModule.ActivateModule();
-//#endif
-
-
+            m_newInputModule.ActivateModule();
+            UI_Enable.Invoke(UI_ActionMap, new object[0]);
         }
     }
 }

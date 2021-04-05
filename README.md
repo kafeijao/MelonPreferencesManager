@@ -19,21 +19,21 @@ Requires MelonLoader v0.3.1.
 
 ## Info for developers
 
-The UI supports the following types:
+The UI supports the following types by default:
 
 * Toggle: `bool`
 * Number input: `int`, `float` etc (any primitive number type)
 * String input: `string`
 * Dropdown: `enum`
 * Multi-toggle: `enum` with `[Flags]` attribute
-* Color editor: `Color`
-* Struct editor: `Vector2`, `Vector3`, `Vector4`, `Rect`
+* Color picker: `Color`
+* Struct editor: `Vector2`, `Vector3`, `Vector4`, `Quaternion`, etc
 * Toml input: Anything with a corresponding Mapper registered to `MelonPreferences.Mapper`.
 
 To make a slider, use a number type and provide a `ValueRange` for the Validator when creating the entry.
 
 You can register a custom UI handler for a Type, to override the default Toml input editor for it.
-* Define a `MyIValueType : InteractiveValue` class (refer to existing classes for examples)
-* Call `InteractiveValue.RegisterIValueType<MyIValueType>();`
+* Define a `MyIValueType : InteractiveValue` class (refer to existing classes for examples), and override methods/properties as necessary.
+* In your MelonMod.OnApplicationStart method, call `InteractiveValue.RegisterIValueType<MyIValueType>();`
 * Note: If the Type is already handled by an existing InteractiveValue, your one will not be used.
 

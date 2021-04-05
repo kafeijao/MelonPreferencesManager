@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using MelonLoader;
 using MelonPrefManager.UI.InteractiveValues;
+using MelonPrefManager.UI.Utility;
 
 namespace MelonPrefManager.UI
 {
@@ -73,7 +74,7 @@ namespace MelonPrefManager.UI
             IValue.Value = value;
 
             IValue.OnValueUpdated();
-            IValue.RefreshElementsAfterUpdate();
+            IValue.RefreshSubContentState();
         }
 
         #region UI CONSTRUCTION
@@ -99,12 +100,10 @@ namespace MelonPrefManager.UI
             // subcontent
 
             m_subContent = UIFactory.CreateVerticalGroup(m_mainContent, "CacheObjectBase.SubContent", true, false, true, true, 0, default,
-                new Color(1,1,1,0));
+                new Color(1, 1, 1, 0));
             UIFactory.SetLayoutElement(m_subContent, minHeight: 30, flexibleHeight: 9999, minWidth: 125, flexibleWidth: 9000);
 
             m_subContent.SetActive(false);
-
-            IValue.m_subContentParent = m_subContent;
 
             m_mainGroup = UIFactory.CreateVerticalGroup(m_mainContent, "ConfigHolder", true, false, true, true, 5, new Vector4(2, 2, 5, 5),
                 new Color(0.12f, 0.12f, 0.12f));
@@ -117,13 +116,8 @@ namespace MelonPrefManager.UI
 
             var configLabel = UIFactory.CreateLabel(horiGroup, "ConfigLabel", this.RefConfig.DisplayName, TextAnchor.MiddleLeft, 
                 new Color(0.7f, 1, 0.7f));
-            var leftRect = configLabel.GetComponent<RectTransform>();
-            leftRect.anchorMin = Vector2.zero;
-            leftRect.anchorMax = Vector2.one;
-            leftRect.offsetMin = Vector2.zero;
-            leftRect.offsetMax = Vector2.zero;
-            leftRect.sizeDelta = Vector2.zero;
-            UIFactory.SetLayoutElement(configLabel.gameObject, minWidth: 250, minHeight: 22, flexibleWidth: 9999, flexibleHeight: 0);
+            configLabel.text += $" <i>({SignatureHighlighter.ParseFullSyntax(RefConfig.GetReflectedType(), false)})</i>";
+            UIFactory.SetLayoutElement(configLabel.gameObject, minWidth: 500, minHeight: 22, flexibleWidth: 9999, flexibleHeight: 0);
 
             // Default button
 

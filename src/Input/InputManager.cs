@@ -27,7 +27,6 @@ namespace MelonPrefManager.Input
         public static bool GetMouseButton(int btn) => m_inputModule.GetMouseButton(btn);
 
         public static BaseInputModule UIInput => m_inputModule.UIModule;
-        public static PointerEventData InputPointerEvent => m_inputModule.InputPointerEvent;
 
         public static void ActivateUIModule() => m_inputModule.ActivateModule();
 
