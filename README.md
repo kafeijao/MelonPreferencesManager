@@ -2,7 +2,7 @@
 
 In-game UI for managing MelonLoader Mod Preferences. Supports IL2CPP and Mono Unity games.
 
-Requires MelonLoader v0.3.1. Currently requires [my fork](https://github.com/sinai-dev/MelonLoader/tree/alpha-development), so this is just here for show until the branch is merged. If you want to test it now you'll need to build my version and replace all the files from a normal 0.3 installtion with the ones from my version.
+Requires MelonLoader v0.3.1.
 
 ## Releases
 
