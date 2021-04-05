@@ -25,6 +25,7 @@ The UI supports the following types:
 * Number input: `int`, `float` etc (any primitive number type)
 * String input: `string`
 * Dropdown: `enum`
+* Multi-toggle: `enum` with `[Flags]` attribute
 * Color editor: `Color`
 * Struct editor: `Vector2`, `Vector3`, `Vector4`, `Rect`
 * Toml input: Anything with a corresponding Mapper registered to `MelonPreferences.Mapper`.
