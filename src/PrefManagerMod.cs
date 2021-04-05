@@ -127,30 +127,5 @@ namespace MelonPrefManager
         }
 
         #endregion
-
-        #region CONSOLE EXIT CALLBACK
-
-        internal static void InitConsoleCallback()
-        {
-            handler = new ConsoleEventDelegate(ConsoleEventCallback);
-            SetConsoleCtrlHandler(handler, true);
-        }
-
-        static bool ConsoleEventCallback(int eventType)
-        {
-            // 2 is Console Quit
-            if (eventType == 2)
-                MelonPreferences.Save();
-
-            return false;
-        }
-
-        static ConsoleEventDelegate handler;
-        private delegate bool ConsoleEventDelegate(int eventType);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool SetConsoleCtrlHandler(ConsoleEventDelegate callback, bool add);
-
-        #endregion
     }
 }
