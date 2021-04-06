@@ -31,7 +31,7 @@ The UI supports the following types by default:
 * Toml input: Anything with a corresponding Mapper registered to `MelonPreferences.Mapper`.
 
 To make a slider, use a number type and provide a `ValueRange` for the Validator when creating the entry.
-* eg. `myCategory.CreateEntry("SomeFloat", 1f, validator: new ValueRange(0f, 1000f));`
+* eg. `myCategory.CreateEntry("SomeFloat", 1f, validator: new ValueRange<float>(0f, 1000f));`
 
 You can register a custom UI handler for a Type, to override the default Toml input editor for it.
 * Define a `MyIValueType : InteractiveValue` class (refer to existing classes for examples), and override methods/properties as necessary.
