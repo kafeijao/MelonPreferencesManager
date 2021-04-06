@@ -9,6 +9,12 @@ namespace MelonPrefManager.UI.InteractiveValues
 {
     public class InteractiveColor : InteractiveValue
     {
+        private Image m_colorImage;
+        private readonly InputField[] m_inputs = new InputField[4];
+        private readonly Slider[] m_sliders = new Slider[4];
+
+        private static readonly string[] s_fieldNames = new[] { "R", "G", "B", "A" };
+
         public InteractiveColor(object value, Type valueType) : base(value, valueType) { }
 
         public override bool SupportsType(Type type) => typeof(Color).IsAssignableFrom(type);
@@ -40,11 +46,6 @@ namespace MelonPrefManager.UI.InteractiveValues
             RefreshColorUI();
         }
 
-        private Image m_colorImage;
-
-        private readonly InputField[] m_inputs = new InputField[4];
-        private readonly Slider[] m_sliders = new Slider[4];
-
         public override void ConstructUI(GameObject parent)
         {
             base.ConstructUI(parent);
@@ -75,8 +76,6 @@ namespace MelonPrefManager.UI.InteractiveValues
 
             RefreshUIForValue();
         }
-
-        private static readonly string[] s_fieldNames = new[] { "R", "G", "B", "A" };
 
         internal void AddEditorRow(int index, GameObject groupObj)
         {

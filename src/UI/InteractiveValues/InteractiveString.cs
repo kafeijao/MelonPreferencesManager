@@ -14,8 +14,9 @@ namespace MelonPrefManager.UI.InteractiveValues
     {
         public InteractiveString(object value, Type valueType) : base(value, valueType) { }
 
-        public override bool HasSubContent => false;
-        public override bool SubContentWanted => false;
+        internal InputField m_valueInput;
+        internal GameObject m_hiddenObj;
+        internal Text m_placeholderText;
 
         public override bool SupportsType(Type type) => type == typeof(string);
 
@@ -49,10 +50,6 @@ namespace MelonPrefManager.UI.InteractiveValues
             Value = m_valueInput.text;
             Owner.SetValueFromIValue();
         }
-
-        internal InputField m_valueInput;
-        internal GameObject m_hiddenObj;
-        internal Text m_placeholderText;
 
         public override void ConstructUI(GameObject parent)
         {

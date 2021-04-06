@@ -14,6 +14,11 @@ namespace MelonPrefManager.UI.InteractiveValues
 {
     public class InteractiveNumber : InteractiveValue
     {
+        internal InputField m_valueInput;
+
+        public MethodInfo ParseMethod => m_parseMethod ??= Value.GetType().GetMethod("Parse", new Type[] { typeof(string) });
+        private MethodInfo m_parseMethod;
+
         public InteractiveNumber(object value, Type valueType) : base(value, valueType) { }
 
         public override bool SupportsType(Type type)
@@ -26,9 +31,6 @@ namespace MelonPrefManager.UI.InteractiveValues
             if (!m_valueInput.gameObject.activeSelf)
                 m_valueInput.gameObject.SetActive(true);
         }
-
-        public MethodInfo ParseMethod => m_parseMethod ??= Value.GetType().GetMethod("Parse", new Type[] { typeof(string) });
-        private MethodInfo m_parseMethod;
 
         internal void SetValueFromInput()
         {
@@ -45,8 +47,6 @@ namespace MelonPrefManager.UI.InteractiveValues
                 m_valueInput.textComponent.color = Color.red;
             }
         }
-
-        internal InputField m_valueInput;
 
         public override void ConstructUI(GameObject parent)
         {

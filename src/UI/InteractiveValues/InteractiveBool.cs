@@ -13,6 +13,7 @@ namespace MelonPrefManager.UI.InteractiveValues
         public InteractiveBool(object value, Type valueType) : base(value, valueType) { }
 
         internal Toggle m_toggle;
+        private Text labelText;
 
         public override bool SupportsType(Type type) => type == typeof(bool);
 
@@ -39,8 +40,6 @@ namespace MelonPrefManager.UI.InteractiveValues
             RefreshUIForValue();
             Owner.SetValueFromIValue();
         }
-
-        private Text labelText;
 
         public override void ConstructUI(GameObject parent)
         {

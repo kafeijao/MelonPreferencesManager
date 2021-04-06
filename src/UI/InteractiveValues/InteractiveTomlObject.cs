@@ -24,6 +24,10 @@ namespace MelonPrefManager.UI.InteractiveValues
         public DocumentSyntax tomlDoc;
         private MethodInfo _toTomlMethod;
         private MethodInfo _fromTomlMethod;
+        
+        internal InputField m_valueInput;
+        internal GameObject m_hiddenObj;
+        internal Text m_placeholderText;
 
         public override void OnValueUpdated()
         {
@@ -86,10 +90,9 @@ namespace MelonPrefManager.UI.InteractiveValues
 
                 m_valueInput.textComponent.color = Color.white;
             }
-            catch //(Exception ex)
+            catch
             {
                 m_valueInput.textComponent.color = Color.red;
-                //PrefManagerMod.LogWarning($"Unable to parse input! {ex}");
             }
         }
 
@@ -99,24 +102,9 @@ namespace MelonPrefManager.UI.InteractiveValues
                 m_hiddenObj.gameObject.SetActive(true);
         }
 
-        // for the default label
-        //internal LayoutElement m_labelLayout;
-
-        // for input
-        internal InputField m_valueInput;
-        internal GameObject m_hiddenObj;
-        internal Text m_placeholderText;
-
-        public override void ConstructUI(GameObject parent)//, GameObject subGroup)
+        public override void ConstructUI(GameObject parent)
         {
-            base.ConstructUI(parent);//, subGroup);
-
-            //GetDefaultLabel(false);
-            //m_richValueType = SignatureHighlighter.ParseFullSyntax(FallbackType, false);
-
-            //m_labelLayout = m_baseLabel.gameObject.GetComponent<LayoutElement>();
-            //m_labelLayout.minWidth = 0;
-            //m_labelLayout.flexibleWidth = 0;
+            base.ConstructUI(parent);
 
             m_hiddenObj = UIFactory.CreateLabel(m_mainContent, "HiddenLabel", "", TextAnchor.MiddleLeft).gameObject;
             m_hiddenObj.SetActive(false);
@@ -140,9 +128,6 @@ namespace MelonPrefManager.UI.InteractiveValues
 
             m_placeholderText.supportRichText = false;
             m_valueInput.textComponent.supportRichText = false;
-
-            //var apply = UIFactory.CreateButton(m_mainContent, "ApplyButton", "Apply", SetValueFromInput, new Color(0.2f, 0.2f, 0.2f));
-            //UIFactory.SetLayoutElement(apply.gameObject, minWidth: 50, minHeight: 25, flexibleWidth: 0);
 
             OnValueUpdated();
 

@@ -79,6 +79,14 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         public bool m_UIConstructed;
 
+        protected internal GameObject m_mainContentParent;
+        protected internal GameObject m_subContentParent;
+
+        protected internal GameObject m_mainContent;
+
+        protected internal Button m_subExpandBtn;
+        protected internal bool m_subContentConstructed;
+
         public virtual void OnValueUpdated()
         {
             if (!m_UIConstructed)
@@ -147,14 +155,6 @@ namespace MelonPrefManager.UI.InteractiveValues
             if (!m_subContentConstructed)
                 ConstructSubcontent();
         }
-
-        protected internal GameObject m_mainContentParent;
-        protected internal GameObject m_subContentParent;
-
-        protected internal GameObject m_mainContent;
-
-        protected internal Button m_subExpandBtn;
-        protected internal bool m_subContentConstructed;
 
         public virtual void ConstructUI(GameObject parent)
         {

@@ -14,7 +14,9 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         internal KeyValuePair<long, string>[] m_values = new KeyValuePair<long, string>[0];
         internal Dictionary<string, Dropdown.OptionData> m_dropdownOptions = new Dictionary<string, Dropdown.OptionData>();
-        
+
+        internal Dropdown m_dropdown;
+
         public InteractiveEnum(object value, Type valueType) : base(value, valueType)
         {
             if (value != null)
@@ -104,8 +106,6 @@ namespace MelonPrefManager.UI.InteractiveValues
             }
         }
 
-        internal Dropdown m_dropdown;
-
         public override void ConstructUI(GameObject parent)
         {
             base.ConstructUI(parent);
@@ -132,16 +132,6 @@ namespace MelonPrefManager.UI.InteractiveValues
                 m_dropdown.options.Add(opt);
                 m_dropdownOptions.Add(kvp.Value, opt);
             }
-
-            //// filter input
-
-            //var filterObj = UIFactory.CreateInputField(m_mainContent, "FilterInput", "Filter values...");
-            //UIFactory.SetLayoutElement(filterObj, minHeight: 25, flexibleWidth: 999);
-            //var filter = filterObj.GetComponent<InputField>();
-            //filter.onValueChanged.AddListener((string val) =>
-            //{
-            //    PopulateDropdown(val);
-            //});
         }
     }
 }
