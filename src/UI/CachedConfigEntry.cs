@@ -31,8 +31,9 @@ namespace MelonPrefManager.UI
         public CachedConfigEntry(MelonPreferences_Entry config, GameObject parent)
         {
             RefConfig = config;
-
             parentContent = parent;
+
+            EnsureConfigValid();
 
             config.OnValueChangedUntyped += () => { UpdateValue(); };
 
@@ -47,36 +48,61 @@ namespace MelonPrefManager.UI
             IValue.m_subContentParent = this.SubContentGroup;
         }
 
-        public void SetValueFromIValue()
+        private void EnsureConfigValid()
         {
-            if (RefConfig.Validator != null)
-                IValue.Value = RefConfig.Validator.EnsureValid(IValue.Value);
+            // MelonLoader does not support null config values. Ensure valid.
+            if (RefConfig.BoxedValue == null)
+            {
+                if (FallbackType == typeof(string))
+                    RefConfig.BoxedValue = "";
+                else if (FallbackType.IsArray)
+                    RefConfig.BoxedValue = Array.CreateInstance(FallbackType.GetElementType(), 0);
+                else
+                    RefConfig.BoxedValue = Activator.CreateInstance(FallbackType);
 
-            var edited = RefConfig.GetEditedValue();
-            if ((edited == null && IValue.Value == null) || (edited != null && edited.Equals(IValue.Value)))
-                return;
-
-            RefConfig.SetEditedValue(IValue.Value);
-            PreferencesEditor.OnEntryEdit(this);
-            m_undoButton.SetActive(true);
+                RefConfig.BoxedEditedValue = RefConfig.BoxedValue;
+            }
         }
 
         public void UpdateValue()
         {
-            IValue.Value = RefConfig.GetEditedValue();
+            EnsureConfigValid();
+            IValue.Value = RefConfig.BoxedEditedValue;
 
             IValue.OnValueUpdated();
             IValue.RefreshSubContentState();
         }
 
+        public void SetValueFromIValue()
+        {
+            if (RefConfig.Validator != null)
+                IValue.Value = RefConfig.Validator.EnsureValid(IValue.Value);
+
+            var edited = RefConfig.BoxedEditedValue;
+            if ((edited == null && IValue.Value == null) || (edited != null && edited.Equals(IValue.Value)))
+                return;
+
+            RefConfig.BoxedEditedValue = IValue.Value;
+            PreferencesEditor.OnEntryEdit(this);
+            m_undoButton.SetActive(true);
+        }
+
         public void UndoEdits()
         {
-            RefConfig.SetEditedValue(RefConfig.BoxedValue);
+            RefConfig.BoxedEditedValue = RefConfig.BoxedValue;
             IValue.Value = RefConfig.BoxedValue;
             IValue.OnValueUpdated();
 
             OnSaveOrUndo();
             PreferencesEditor.OnEntryUndo(this);
+        }
+
+        public void RevertToDefault()
+        {
+            RefConfig.ResetToDefault();
+            RefConfig.BoxedEditedValue = RefConfig.BoxedValue;
+            UpdateValue();
+            OnSaveOrUndo();
         }
 
         internal void OnSaveOrUndo()
@@ -141,7 +167,7 @@ namespace MelonPrefManager.UI
 
             // Default button
 
-            var defaultButton = UIFactory.CreateButton(horiGroup, "DefaultButton", "Default", RefConfig.ResetToDefault, new Color(0.3f, 0.3f, 0.3f));
+            var defaultButton = UIFactory.CreateButton(horiGroup, "DefaultButton", "Default", RevertToDefault, new Color(0.3f, 0.3f, 0.3f));
             UIFactory.SetLayoutElement(defaultButton.gameObject, minWidth: 80, minHeight: 22, flexibleWidth: 0);
 
             // Description label
@@ -167,31 +193,6 @@ namespace MelonPrefManager.UI
                 IValue.m_mainContentParent = ContentGroup;
                 IValue.m_subContentParent = this.SubContentGroup;
             }
-        }
-    }
-
-    public static class MelonPrefExtensions
-    {
-        private static readonly Dictionary<MelonPreferences_Entry, PropertyInfo> editedProps = new Dictionary<MelonPreferences_Entry, PropertyInfo>();
-
-        public static object GetEditedValue(this MelonPreferences_Entry entry)
-        {
-            if (!editedProps.ContainsKey(entry))
-            {
-                var type = typeof(MelonPreferences_Entry<>).MakeGenericType(entry.GetReflectedType());
-                editedProps.Add(entry, ReflectionUtility.GetPropertyInfo(type, "EditedValue"));
-            }
-            return editedProps[entry].GetValue(entry, null);
-        }
-
-        public static void SetEditedValue(this MelonPreferences_Entry entry, object value)
-        {
-            if (!editedProps.ContainsKey(entry))
-            {
-                var type = typeof(MelonPreferences_Entry<>).MakeGenericType(entry.GetReflectedType());
-                editedProps.Add(entry, ReflectionUtility.GetPropertyInfo(type, "EditedValue"));
-            }
-            editedProps[entry].SetValue(entry, value, null);
         }
     }
 }

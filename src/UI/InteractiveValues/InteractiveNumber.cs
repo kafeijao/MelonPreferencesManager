@@ -45,10 +45,12 @@ namespace MelonPrefManager.UI.InteractiveValues
                 Value = ParseMethod.Invoke(null, new object[] { m_valueInput.text });
                 Owner.SetValueFromIValue();
                 RefreshUIForValue();
+
+                m_valueInput.textComponent.color = Color.white;
             }
-            catch //(Exception e)
+            catch 
             {
-                //PrefManagerMod.LogWarning("Could not parse input! " + ReflectionUtility.ReflectionExToString(e, true));
+                m_valueInput.textComponent.color = Color.red;
             }
         }
 
