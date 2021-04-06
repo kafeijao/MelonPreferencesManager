@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using MelonPrefManager.UI;
-using MelonPrefManager.UI.Utility;
-using MelonPrefManager.Runtime;
 
 namespace MelonPrefManager.UI.InteractiveValues
 {
@@ -147,13 +142,11 @@ namespace MelonPrefManager.UI.InteractiveValues
             RefreshSubContentState();
         }
 
-        internal virtual void OnToggleSubcontent(bool toggle)
+        protected internal virtual void OnToggleSubcontent(bool toggle)
         {
             if (!m_subContentConstructed)
                 ConstructSubcontent();
         }
-
-        #region UI CONSTRUCTION
 
         protected internal GameObject m_mainContentParent;
         protected internal GameObject m_subContentParent;
@@ -184,7 +177,5 @@ namespace MelonPrefManager.UI.InteractiveValues
                 UIFactory.SetLayoutElement(m_subExpandBtn.gameObject, minHeight: 25, minWidth: 120, flexibleWidth: 0, flexibleHeight: 0);
             }
         }
-
-#endregion
     }
 }

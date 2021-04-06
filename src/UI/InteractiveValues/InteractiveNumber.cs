@@ -16,16 +16,8 @@ namespace MelonPrefManager.UI.InteractiveValues
     {
         public InteractiveNumber(object value, Type valueType) : base(value, valueType) { }
 
-        public override bool HasSubContent => false;
-        public override bool SubContentWanted => false;
-
         public override bool SupportsType(Type type)
             => (type.IsPrimitive && type != typeof(bool)) || type == typeof(decimal);
-
-        public override void OnValueUpdated()
-        {
-            base.OnValueUpdated();
-        }
 
         public override void RefreshUIForValue()
         {

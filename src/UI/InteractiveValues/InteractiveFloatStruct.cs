@@ -9,55 +9,56 @@ using System.Reflection;
 
 namespace MelonPrefManager.UI.InteractiveValues
 {
-    // Class for supporting any "float struct" (ie Vector, Rect, etc).
-    // Supports any struct where all the public instance fields are floats (or types assignable to float)
-
-    public class StructInfo
-    {
-        public string[] FieldNames { get; }
-        private readonly FieldInfo[] m_fields;
-
-        public StructInfo(Type type)
-        {
-            m_fields = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-                           .Where(it => !it.IsLiteral)
-                           .ToArray();
-
-            FieldNames = m_fields.Select(it => it.Name)
-                                 .ToArray();
-        }
-
-        public object SetValue(ref object instance, int fieldIndex, float val)
-        {
-            m_fields[fieldIndex].SetValue(instance, val);
-            return instance;
-        }
-
-        public float GetValue(object instance, int fieldIndex)
-            => (float)m_fields[fieldIndex].GetValue(instance);
-
-        public void RefreshUI(InputField[] inputs, object instance)
-        {
-            try
-            {
-                for (int i = 0; i < m_fields.Length; i++)
-                {
-                    var field = m_fields[i];
-                    float val = (float)field.GetValue(instance);
-                    inputs[i].text = val.ToString();
-                    //sliders[i].value = val;
-                }
-            }
-            catch (Exception ex)
-            {
-                PrefManagerMod.Log(ex);
-            }
-        }
-    }
+    // Class for supporting any "float struct" (ie Vector, Quaternion, etc).
+    // Supports any struct where all the instance fields are floats
 
     public class InteractiveFloatStruct : InteractiveValue
     {
+        // StructInfo is a helper class for using reflection on the current value's type
+        public class StructInfo
+        {
+            public string[] FieldNames { get; }
+            private readonly FieldInfo[] m_fields;
+
+            public StructInfo(Type type)
+            {
+                m_fields = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
+                               .Where(it => !it.IsLiteral)
+                               .ToArray();
+
+                FieldNames = m_fields.Select(it => it.Name)
+                                     .ToArray();
+            }
+
+            public object SetValue(ref object instance, int fieldIndex, float val)
+            {
+                m_fields[fieldIndex].SetValue(instance, val);
+                return instance;
+            }
+
+            public float GetValue(object instance, int fieldIndex)
+                => (float)m_fields[fieldIndex].GetValue(instance);
+
+            public void RefreshUI(InputField[] inputs, object instance)
+            {
+                try
+                {
+                    for (int i = 0; i < m_fields.Length; i++)
+                    {
+                        var field = m_fields[i];
+                        float val = (float)field.GetValue(instance);
+                        inputs[i].text = val.ToString();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    PrefManagerMod.Log(ex);
+                }
+            }
+        }
+
         private static readonly Dictionary<string, bool> _typeSupportCache = new Dictionary<string, bool>();
+        
         public static bool IsTypeSupported(Type type)
         {
             if (!type.IsValueType)
@@ -87,10 +88,9 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         public InteractiveFloatStruct(object value, Type valueType) : base(value, valueType) { }
 
-        public override bool SupportsType(Type type)
-            => IsTypeSupported(type);
+        public override bool SupportsType(Type type) => IsTypeSupported(type);
 
-        public StructInfo StructInfo;
+        public StructInfo structInfo;
 
         public override void RefreshUIForValue()
         {
@@ -98,7 +98,7 @@ namespace MelonPrefManager.UI.InteractiveValues
 
             base.RefreshUIForValue();
 
-            StructInfo.RefreshUI(m_inputs, this.Value);
+            structInfo.RefreshUI(m_inputs, this.Value);
         }
 
         internal Type m_lastStructType;
@@ -107,15 +107,13 @@ namespace MelonPrefManager.UI.InteractiveValues
         {
             var type = Value?.GetType() ?? FallbackType;
 
-            if (StructInfo != null && type == m_lastStructType)
+            if (structInfo != null && type == m_lastStructType)
                 return;
 
             m_lastStructType = type;
 
-            StructInfo = new StructInfo(type);
+            structInfo = new StructInfo(type);
         }
-
-        #region UI CONSTRUCTION
 
         internal InputField[] m_inputs;
 
@@ -131,9 +129,9 @@ namespace MelonPrefManager.UI.InteractiveValues
                     new Color(1,1,1,0));
                 UIFactory.SetLayoutElement(editorContainer, minWidth: 300, flexibleWidth: 9999);
 
-                m_inputs = new InputField[StructInfo.FieldNames.Length];
+                m_inputs = new InputField[structInfo.FieldNames.Length];
 
-                for (int i = 0; i < StructInfo.FieldNames.Length; i++)
+                for (int i = 0; i < structInfo.FieldNames.Length; i++)
                     AddEditorRow(i, editorContainer);
 
                 RefreshUIForValue();
@@ -150,7 +148,7 @@ namespace MelonPrefManager.UI.InteractiveValues
             {
                 var row = UIFactory.CreateHorizontalGroup(groupObj, "EditorRow", false, true, true, true, 5, default, new Color(1, 1, 1, 0));
 
-                string name = StructInfo.FieldNames[index];
+                string name = structInfo.FieldNames[index];
                 if (name.StartsWith("m_"))
                     name = name.Substring(2, name.Length - 2);
                 if (name.Length > 1)
@@ -170,7 +168,7 @@ namespace MelonPrefManager.UI.InteractiveValues
                     try
                     {
                         float f = float.Parse(val);
-                        Value = StructInfo.SetValue(ref this.Value, index, f);
+                        Value = structInfo.SetValue(ref this.Value, index, f);
                         Owner.SetValueFromIValue();
                     }
                     catch { }
@@ -181,7 +179,5 @@ namespace MelonPrefManager.UI.InteractiveValues
                 PrefManagerMod.Log(ex);
             }
         }
-
-        #endregion
     }
 }

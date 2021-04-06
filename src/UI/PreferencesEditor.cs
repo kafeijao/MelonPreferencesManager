@@ -13,21 +13,23 @@ namespace MelonPrefManager.UI
 {
     public class PreferencesEditor
     {
-        internal class PrefCategoryInfo
+        // helper classes for managing category and entry representations
+
+        internal class CategoryInfo
         {
             public MelonPreferences_Category RefCategory;
 
-            internal List<PrefInfo> Prefs = new List<PrefInfo>();
+            internal List<EntryInfo> Prefs = new List<EntryInfo>();
 
             internal bool isCompletelyHidden;
             internal Button listButton;
             internal GameObject contentObj;
 
-            internal IEnumerable<GameObject> AdvancedConfigs 
+            internal IEnumerable<GameObject> HiddenEntries 
                 => Prefs.Where(it => it.IsHidden).Select(it => it.content);
         }
 
-        internal class PrefInfo
+        internal class EntryInfo
         {
             public MelonPreferences_Entry RefEntry;
             public bool IsHidden => RefEntry.IsHidden;
@@ -93,8 +95,8 @@ namespace MelonPrefManager.UI
             MelonCoroutines.Start(SetupCategories());
         }
 
-        private static readonly Dictionary<string, PrefCategoryInfo> _categoryInfos = new Dictionary<string, PrefCategoryInfo>();
-        private static PrefCategoryInfo _currentCategory;
+        private static readonly Dictionary<string, CategoryInfo> _categoryInfos = new Dictionary<string, CategoryInfo>();
+        private static CategoryInfo _currentCategory;
 
         private static Color _normalDisabledColor = new Color(0.17f, 0.25f, 0.17f);
         private static Color _normalActiveColor = new Color(0, 0.45f, 0.05f);
@@ -114,7 +116,7 @@ namespace MelonPrefManager.UI
                     info.listButton.gameObject.SetActive(ShowHiddenConfigs);
             }
 
-            if (_currentCategory != null && _currentCategory.isCompletelyHidden)
+            if (_currentCategory != null && !ShowHiddenConfigs && _currentCategory.isCompletelyHidden)
                 UnsetActiveCategory();
 
             RefreshFilter();
@@ -135,6 +137,7 @@ namespace MelonPrefManager.UI
             {
                 bool val = (string.IsNullOrEmpty(currentFilter) || entry.RefEntry.DisplayName.ToLower().Contains(currentFilter))
                            && (!entry.IsHidden || ShowHiddenConfigs);
+
                 entry.content.SetActive(val);
             }
         }
@@ -170,10 +173,6 @@ namespace MelonPrefManager.UI
             _currentCategory.contentObj.SetActive(false);
 
             _currentCategory = null;
-        }
-
-        public void Update()
-        {
         }
 
         #region UI Construction
@@ -290,7 +289,7 @@ namespace MelonPrefManager.UI
 
                 try
                 {
-                    var info = new PrefCategoryInfo()
+                    var info = new CategoryInfo()
                     {
                         RefCategory = ctg,
                     };
@@ -326,7 +325,7 @@ namespace MelonPrefManager.UI
 
                         var obj = cache.m_UIroot;
 
-                        info.Prefs.Add(new PrefInfo()
+                        info.Prefs.Add(new EntryInfo()
                         {
                             RefEntry = pref,
                             content = obj

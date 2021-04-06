@@ -15,15 +15,10 @@ namespace MelonPrefManager.UI.InteractiveValues
 {
     public class InteractiveTomlObject : InteractiveValue
     {
-        public InteractiveTomlObject(object value, Type valueType) : base(value, valueType)
-        {
-        }
+        public InteractiveTomlObject(object value, Type valueType) : base(value, valueType) { }
 
-        public override bool SupportsType(Type type)
-            => true;
-
-        public override bool HasSubContent => false;
-        public override bool SubContentWanted => false;
+        // Default handler for any type without a specific handler.
+        public override bool SupportsType(Type type) => true;
 
         public TomlObject RefTomlObject;
         public DocumentSyntax tomlDoc;
@@ -53,40 +48,6 @@ namespace MelonPrefManager.UI.InteractiveValues
             {
                 PrefManagerMod.LogWarning($"Unable to edit config '{Owner.RefConfig.DisplayName}' due to an error with the Mapper!");
             }
-        }
-
-        private static ValueSyntax CreateValueSyntax(TomlObject obj)
-        {
-            return obj.Kind switch
-            {
-                ObjectKind.Boolean => new BooleanValueSyntax(((TomlBoolean)obj).Value),
-                ObjectKind.String => new StringValueSyntax(((TomlString)obj).Value),
-                ObjectKind.Float => new FloatValueSyntax(((TomlFloat)obj).Value),
-                ObjectKind.Integer => new IntegerValueSyntax(((TomlInteger)obj).Value),
-                ObjectKind.Array => CreateArraySyntaxFromTomlArray((TomlArray)obj),
-                _ => null
-            };
-        }
-
-        private static ArraySyntax CreateArraySyntaxFromTomlArray(TomlArray arr)
-        {
-            var newSyntax = new ArraySyntax
-            {
-                OpenBracket = SyntaxFactory.Token(TokenKind.OpenBracket),
-                CloseBracket = SyntaxFactory.Token(TokenKind.CloseBracket)
-            };
-            for (var i = 0; i < arr.Count; i++)
-            {
-                var item = new ArrayItemSyntax { Value = CreateValueSyntax(arr.GetTomlObject(i)) };
-                if (i + 1 < arr.Count)
-                {
-                    item.Comma = SyntaxFactory.Token(TokenKind.Comma);
-                    item.Comma.AddTrailingWhitespace();
-                }
-                newSyntax.Items.Add(item);
-            }
-
-            return newSyntax;
         }
 
         internal void SetValueFromInput()
@@ -191,6 +152,42 @@ namespace MelonPrefManager.UI.InteractiveValues
                 LayoutRebuilder.ForceRebuildLayoutImmediate(Owner.ContentRect);
                 SetValueFromInput();
             });
+        }
+
+        // Borrowed from MelonPreferences/API.cs
+
+        private static ValueSyntax CreateValueSyntax(TomlObject obj)
+        {
+            return obj.Kind switch
+            {
+                ObjectKind.Boolean => new BooleanValueSyntax(((TomlBoolean)obj).Value),
+                ObjectKind.String => new StringValueSyntax(((TomlString)obj).Value),
+                ObjectKind.Float => new FloatValueSyntax(((TomlFloat)obj).Value),
+                ObjectKind.Integer => new IntegerValueSyntax(((TomlInteger)obj).Value),
+                ObjectKind.Array => CreateArraySyntaxFromTomlArray((TomlArray)obj),
+                _ => null
+            };
+        }
+
+        private static ArraySyntax CreateArraySyntaxFromTomlArray(TomlArray arr)
+        {
+            var newSyntax = new ArraySyntax
+            {
+                OpenBracket = SyntaxFactory.Token(TokenKind.OpenBracket),
+                CloseBracket = SyntaxFactory.Token(TokenKind.CloseBracket)
+            };
+            for (var i = 0; i < arr.Count; i++)
+            {
+                var item = new ArrayItemSyntax { Value = CreateValueSyntax(arr.GetTomlObject(i)) };
+                if (i + 1 < arr.Count)
+                {
+                    item.Comma = SyntaxFactory.Token(TokenKind.Comma);
+                    item.Comma.AddTrailingWhitespace();
+                }
+                newSyntax.Items.Add(item);
+            }
+
+            return newSyntax;
         }
     }
 }

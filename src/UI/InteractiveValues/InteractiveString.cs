@@ -17,20 +17,10 @@ namespace MelonPrefManager.UI.InteractiveValues
         public override bool HasSubContent => false;
         public override bool SubContentWanted => false;
 
-        public override bool SupportsType(Type type)
-            => type == typeof(string);
-
-        public override void OnValueUpdated()
-        {
-            base.OnValueUpdated();
-        }
+        public override bool SupportsType(Type type) => type == typeof(string);
 
         public override void RefreshUIForValue()
         {
-            //GetDefaultLabel(false);
-
-            //m_baseLabel.text = m_richValueType;
-
             if (!m_hiddenObj.gameObject.activeSelf)
                 m_hiddenObj.gameObject.SetActive(true);
 
@@ -52,34 +42,21 @@ namespace MelonPrefManager.UI.InteractiveValues
                 m_valueInput.text = "";
                 m_placeholderText.text = s;
             }
-
-            //m_labelLayout.minWidth = 50;
-            //m_labelLayout.flexibleWidth = 0;
         }
 
         internal void SetValueFromInput()
         {
             Value = m_valueInput.text;
             Owner.SetValueFromIValue();
-            //RefreshUIForValue();
         }
 
-        // for the default label
-        // internal LayoutElement m_labelLayout;
-
-        // for input
         internal InputField m_valueInput;
         internal GameObject m_hiddenObj;
         internal Text m_placeholderText;
 
-        public override void ConstructUI(GameObject parent)//, GameObject subGroup)
+        public override void ConstructUI(GameObject parent)
         {
-            base.ConstructUI(parent);//, subGroup);
-
-            //GetDefaultLabel(false);
-            //m_richValueType = SignatureHighlighter.ParseFullSyntax(FallbackType, false);
-
-            //m_labelLayout = m_baseLabel.gameObject.GetComponent<LayoutElement>();
+            base.ConstructUI(parent);
 
             m_hiddenObj = UIFactory.CreateLabel(m_mainContent, "HiddenLabel", "", TextAnchor.MiddleLeft).gameObject;
             m_hiddenObj.SetActive(false);
@@ -110,9 +87,6 @@ namespace MelonPrefManager.UI.InteractiveValues
                 LayoutRebuilder.ForceRebuildLayoutImmediate(Owner.ContentRect);
                 SetValueFromInput();
             });
-
-            //var apply = UIFactory.CreateButton(m_mainContent, "ApplyButton", "Apply", SetValueFromInput, new Color(0.2f, 0.2f, 0.2f));
-            //UIFactory.SetLayoutElement(apply.gameObject, minWidth: 50, minHeight: 25, flexibleWidth: 0);
 
             RefreshUIForValue();
         }

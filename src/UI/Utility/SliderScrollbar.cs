@@ -37,8 +37,6 @@ namespace MelonPrefManager.UI.Utility
         internal readonly Slider m_slider;
         internal readonly RectTransform m_scrollRect;
 
-        internal InputFieldScroller m_parentInputScroller;
-
         public SliderScrollbar(Scrollbar scrollbar, Slider slider)
         {
             Instances.Add(this);

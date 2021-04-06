@@ -10,20 +10,20 @@ namespace MelonPrefManager.UI.InteractiveValues
 {
     public class InteractiveFlags : InteractiveEnum
     {
-        public InteractiveFlags(object value, Type valueType) : base(value, valueType) 
+        public override bool HasSubContent => true;
+        public override bool SubContentWanted => true;
+
+        internal bool[] m_enabledFlags;
+        internal Toggle[] m_toggles;
+
+        public InteractiveFlags(object value, Type valueType) : base(value, valueType)
         {
             m_toggles = new Toggle[m_values.Length];
             m_enabledFlags = new bool[m_values.Length];
         }
 
-        public override bool HasSubContent => true;
-        public override bool SubContentWanted => true;
-
         public override bool SupportsType(Type type)
             => type.IsEnum && type.GetCustomAttributes(true).Any(it => it is FlagsAttribute);
-
-        internal bool[] m_enabledFlags;
-        internal Toggle[] m_toggles;
 
         public override void OnValueUpdated()
         {
@@ -74,7 +74,7 @@ namespace MelonPrefManager.UI.InteractiveValues
             Owner.SetValueFromIValue();
         }
 
-        internal override void OnToggleSubcontent(bool toggle)
+        protected internal override void OnToggleSubcontent(bool toggle)
         {
             base.OnToggleSubcontent(toggle);
 

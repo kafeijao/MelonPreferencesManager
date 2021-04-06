@@ -9,15 +9,9 @@ namespace MelonPrefManager.UI.InteractiveValues
 {
     public class InteractiveColor : InteractiveValue
     {
-        //~~~~~~~~~ Instance ~~~~~~~~~~
-
         public InteractiveColor(object value, Type valueType) : base(value, valueType) { }
 
-        //public override bool HasSubContent => true;
-        //public override bool SubContentWanted => true;
-
-        public override bool SupportsType(Type type)
-            => type == typeof(Color);
+        public override bool SupportsType(Type type) => typeof(Color).IsAssignableFrom(type);
 
         public override void RefreshUIForValue()
         {
@@ -39,27 +33,21 @@ namespace MelonPrefManager.UI.InteractiveValues
                 m_colorImage.color = color;
         }
 
-        internal override void OnToggleSubcontent(bool toggle)
+        protected internal override void OnToggleSubcontent(bool toggle)
         {
             base.OnToggleSubcontent(toggle);
 
             RefreshColorUI();
         }
 
-        #region UI CONSTRUCTION
-
         private Image m_colorImage;
 
         private readonly InputField[] m_inputs = new InputField[4];
         private readonly Slider[] m_sliders = new Slider[4];
 
-        public override void ConstructUI(GameObject parent)//, GameObject subGroup)
+        public override void ConstructUI(GameObject parent)
         {
             base.ConstructUI(parent);
-
-            // todo: 
-            // - move UI to here
-            // - make smaller, 2 columns (1 for editors, 1 for color), editor column has 2 rows, color img on right side
 
             // hori group
 
@@ -156,7 +144,5 @@ namespace MelonPrefManager.UI.InteractiveValues
                 }
             }
         }
-
-        #endregion
     }
 }

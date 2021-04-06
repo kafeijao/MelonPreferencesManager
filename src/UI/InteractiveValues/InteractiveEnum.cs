@@ -10,21 +10,18 @@ namespace MelonPrefManager.UI.InteractiveValues
 {
     public class InteractiveEnum : InteractiveValue
     {
-        internal static Dictionary<Type, KeyValuePair<int,string>[]> s_enumNamesCache = new Dictionary<Type, KeyValuePair<int, string>[]>();
+        internal static Dictionary<Type, KeyValuePair<long, string>[]> s_enumNamesCache = new Dictionary<Type, KeyValuePair<long, string>[]>();
 
+        internal KeyValuePair<long, string>[] m_values = new KeyValuePair<long, string>[0];
+        internal Dictionary<string, Dropdown.OptionData> m_dropdownOptions = new Dictionary<string, Dropdown.OptionData>();
+        
         public InteractiveEnum(object value, Type valueType) : base(value, valueType)
         {
-            GetNames();
+            if (value != null)
+                GetNames();
         }
 
-        public override bool HasSubContent => false;
-        public override bool SubContentWanted => false;
-
-        public override bool SupportsType(Type type)
-            => type.IsEnum;
-
-        internal KeyValuePair<int,string>[] m_values = new KeyValuePair<int, string>[0];
-        internal Dictionary<string, Dropdown.OptionData> m_dropdownOptions = new Dictionary<string, Dropdown.OptionData>();
+        public override bool SupportsType(Type type) => type.IsEnum;
 
         internal void GetNames()
         {
@@ -35,7 +32,7 @@ namespace MelonPrefManager.UI.InteractiveValues
                 // using GetValues not GetNames, to catch instances of weird enums (eg CameraClearFlags)
                 var values = Enum.GetValues(type);
 
-                var list = new List<KeyValuePair<int, string>>();
+                var list = new List<KeyValuePair<long, string>>();
                 var set = new HashSet<string>();
 
                 foreach (var value in values)
@@ -48,14 +45,14 @@ namespace MelonPrefManager.UI.InteractiveValues
                     set.Add(name);
 
                     var backingType = Enum.GetUnderlyingType(type);
-                    int intValue;
+                    long longValue;
                     try
                     {
                         // this approach is necessary, a simple '(int)value' is not sufficient.
 
                         var unbox = Convert.ChangeType(value, backingType);
 
-                        intValue = (int)Convert.ChangeType(unbox, typeof(int));
+                        longValue = (long)Convert.ChangeType(unbox, typeof(long));
                     }
                     catch (Exception ex)
                     {
@@ -64,7 +61,7 @@ namespace MelonPrefManager.UI.InteractiveValues
                         continue;
                     }
 
-                    list.Add(new KeyValuePair<int, string>(intValue, name));
+                    list.Add(new KeyValuePair<long, string>(longValue, name));
                 }
 
                 s_enumNamesCache.Add(type, list.ToArray());
@@ -83,8 +80,6 @@ namespace MelonPrefManager.UI.InteractiveValues
         public override void RefreshUIForValue()
         {
             base.RefreshUIForValue();
-
-            //m_baseLabel.text = "";
 
             if (this is InteractiveFlags)
                 return;

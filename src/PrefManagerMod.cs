@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using MelonLoader;
-using MelonLoader.Preferences;
-using MelonLoader.Tomlyn.Model;
 using MelonPrefManager;
 using MelonPrefManager.Input;
 using MelonPrefManager.Runtime;
@@ -21,7 +16,6 @@ namespace MelonPrefManager
 {
     public class PrefManagerMod : MelonMod
     {
-        public const string GUID = "com.sinai.melonprefmanager";
         public const string NAME = "MelonPreferencesManager";
         public const string AUTHOR = "Sinai";
         public const string VERSION = "0.4.2";

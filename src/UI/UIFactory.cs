@@ -444,28 +444,6 @@ namespace MelonPrefManager.UI
         }
 
         /// <summary>
-        /// Create a Scrollable Input Field control (custom InputFieldScroller).
-        /// </summary>
-        public static GameObject CreateSrollInputField(GameObject parent, string name, string placeHolderText,
-            out InputFieldScroller inputScroll, int fontSize = 14, Color color = default)
-        {
-            if (color == default)
-                color = new Color(0.15f, 0.15f, 0.15f);
-
-            var mainObj = CreateScrollView(parent, "InputFieldScrollView", out GameObject scrollContent, out SliderScrollbar scroller, color);
-
-            var inputObj = CreateInputField(scrollContent, name, placeHolderText ?? "...", fontSize, 0);
-
-            var inputField = inputObj.GetComponent<InputField>();
-            inputField.lineType = InputField.LineType.MultiLineNewline;
-            inputField.targetGraphic.color = color;
-
-            inputScroll = new InputFieldScroller(scroller, inputField);
-
-            return mainObj;
-        }
-
-        /// <summary>
         /// Create a standard InputField control.
         /// </summary>
         public static GameObject CreateInputField(GameObject parent, string name, string placeHolderText, int fontSize = 14, int alignment = 3, int wrap = 0)

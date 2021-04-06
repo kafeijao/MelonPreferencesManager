@@ -62,13 +62,10 @@ namespace MelonPrefManager.UI
             if (!ShowMenu)
                 return;
 
-            PreferencesEditor.Instance.Update();
-
             if (EventSystem.current != EventSys)
                 CursorUnlocker.SetEventSystem();
 
             SliderScrollbar.UpdateInstances();
-            InputFieldScroller.UpdateInstances();
         }
 
         private static void CreateRootCanvas()
