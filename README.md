@@ -11,9 +11,9 @@ Requires MelonLoader v0.3.1.
 
 ## How to use
 
-* Put the DLL in your `[GameFolder]\Mods\` folder.
+* Put the DLL in your `Mods` folder.
 * Start the game and press `F5` to open the Menu.
-* You can change the keybinding under the `MelonPreferencesManager` category in the Menu, or by editing the file `[GameFolder]\UserData\MelonPreferences.cfg`.
+* You can change the keybinding under the `MelonPreferencesManager` category in the Menu, or by editing the file `UserData\MelonPreferences.cfg`.
 
 [![](img/preview.png)](https://raw.githubusercontent.com/sinai-dev/MelonPreferencesManager/master/img/preview.png)
 
@@ -28,13 +28,32 @@ The UI supports the following types by default:
 * Multi-toggle: `enum` with `[Flags]` attribute
 * Color picker: `Color`
 * Struct editor: `Vector2`, `Vector3`, `Vector4`, `Quaternion`, etc
-* Toml input: Anything with a corresponding Mapper registered to `MelonPreferences.Mapper`.
+* Toml input: Arrays and anything with a corresponding Mapper registered to `MelonPreferences.Mapper`.
 
-To make a slider, use a number type and provide a `ValueRange` for the Validator when creating the entry.
-* eg. `myCategory.CreateEntry("SomeFloat", 1f, validator: new ValueRange<float>(0f, 1000f));`
+To make a slider, use a number type and provide a `ValueRange` for the Validator when creating the entry. For example:
+* `myCategory.CreateEntry("SomeFloat", 0f, validator: new ValueRange<float>(-1f, 1f));`
+* `myCategory.CreateEntry("SomeByte", 32, validator: new ValueRange<byte>(0, 255));`
 
-You can register a custom UI handler for a Type, to override the default Toml input editor for it.
-* Define a `MyIValueType : InteractiveValue` class (refer to existing classes for examples), and override methods/properties as necessary.
-* In your MelonMod.OnApplicationStart method, call `InteractiveValue.RegisterIValueType<MyIValueType>();`
-* Note: If the Type is already handled by an existing InteractiveValue, your one will not be used.
+You can override the Toml input for a Type by registering your own InteractiveValue for it. Refer to [existing classes](https://github.com/sinai-dev/MelonPreferencesManager/tree/main/src/UI/InteractiveValues) for more concrete examples.
+```csharp
+// Define an InteractiveValue class to handle 'Something'
+public class InteractiveSomething : InteractiveValue
+{
+    // declaring this ctor is required
+    public InteractiveSomething(object value, Type fallbackType) : base(value, fallbackType) { }
 
+    // you could also check "if type == typeof(Something)" to be more strict
+    public override bool SupportsType(Type type) => typeof(Something).IsAssignableFrom(type);
+
+    // override other methods as necessary
+}
+
+// Register your class in your MelonMod.OnApplicationStart method
+public class MyMod : MelonLoader.MelonMod
+{
+    public override void OnApplicationStart()
+    {
+        InteractiveValue.RegisterIValueType<InteractiveSomething>();
+    }
+}
+```
