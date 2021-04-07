@@ -32,7 +32,7 @@ namespace MelonPrefManager.UI.InteractiveValues
             else if (type == typeof(string))
                 return typeof(InteractiveString);
             // KeyCode
-            else if (type == typeof(KeyCode))
+            else if (type == typeof(KeyCode) || type.FullName == "UnityEngine.InputSystem.Key")
                 return typeof(InteractiveKeycode);
             // Flags and Enum
             else if (typeof(Enum).IsAssignableFrom(type))

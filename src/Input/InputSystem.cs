@@ -83,60 +83,20 @@ namespace MelonPrefManager.Input
             }
         }
 
-        internal static Dictionary<KeyCode, object> ActualKeyDict = new Dictionary<KeyCode, object>();
-
-        internal static Dictionary<string, string> enumNameFixes = new Dictionary<string, string>
-        {
-            { "Control", "Ctrl" },
-            { "Return", "Enter" },
-            { "Alpha", "Digit" },
-            { "Keypad", "Numpad" },
-            { "Numlock", "NumLock" },
-            { "Print", "PrintScreen" },
-            { "BackQuote", "Backquote" }
-        };
-
-        internal object GetActualKey(KeyCode key)
-        {
-            if (!ActualKeyDict.ContainsKey(key))
-            {
-                var s = key.ToString();
-                try
-                {
-                    if (enumNameFixes.First(it => s.Contains(it.Key)) is KeyValuePair<string, string> entry)
-                        s = s.Replace(entry.Key, entry.Value);
-                }
-                catch { }
-
-                try
-                {
-                    var parsed = Enum.Parse(TKey, s);
-                    var actualKey = m_kbIndexer.GetValue(CurrentKeyboard, new object[] { parsed });
-                    ActualKeyDict.Add(key, actualKey);
-                }
-                catch
-                {
-                    ActualKeyDict.Add(key, default);
-                }
-            }
-
-            return ActualKeyDict[key];
-        }
-
         public bool GetKeyDown(KeyCode key)
         {
-            var obj = GetActualKey(key);
+            var obj = KeyCodeToActualKey(key);
             if (obj == default)
                 return false;
-            return (bool)m_btnWasPressedProp.GetValue(GetActualKey(key), null);
+            return (bool)m_btnWasPressedProp.GetValue(KeyCodeToActualKey(key), null);
         }
 
         public bool GetKey(KeyCode key)
         {
-            var obj = GetActualKey(key);
+            var obj = KeyCodeToActualKey(key);
             if (obj == default)
                 return false;
-            return (bool)m_btnIsPressedProp.GetValue(GetActualKey(key), null);
+            return (bool)m_btnIsPressedProp.GetValue(KeyCodeToActualKey(key), null);
         }
         public bool GetMouseButtonDown(int btn)
         {
@@ -158,6 +118,65 @@ namespace MelonPrefManager.Input
                 // case 2: return (bool)_btnIsPressedProp.GetValue(MiddleMouseButton, null);
                 _ => throw new NotImplementedException(),
             };
+        }
+
+        internal static Dictionary<KeyCode, object> KeyCodeToKeyDict = new Dictionary<KeyCode, object>();
+        internal static Dictionary<KeyCode, object> KeyCodeToKeyEnumDict = new Dictionary<KeyCode, object>();
+
+        internal static Dictionary<string, string> keycodeToKeyFixes = new Dictionary<string, string>
+        {
+            { "Control", "Ctrl" },
+            { "Return", "Enter" },
+            { "Alpha", "Digit" },
+            { "Keypad", "Numpad" },
+            { "Numlock", "NumLock" },
+            { "Print", "PrintScreen" },
+            { "BackQuote", "Backquote" }
+        };
+
+        internal object KeyCodeToActualKey(KeyCode key)
+        {
+            if (!KeyCodeToKeyDict.ContainsKey(key)) 
+            {
+                try
+                {
+                    var parsed = KeyCodeToKeyEnum(key);
+                    var actualKey = m_kbIndexer.GetValue(CurrentKeyboard, new object[] { parsed });
+                    KeyCodeToKeyDict.Add(key, actualKey);
+                }
+                catch
+                {
+                    KeyCodeToKeyDict.Add(key, default);
+                }
+            }
+
+            return KeyCodeToKeyDict[key];
+        }
+
+        internal object KeyCodeToKeyEnum(KeyCode key)
+        {
+            if (!KeyCodeToKeyEnumDict.ContainsKey(key))
+            {
+                var s = key.ToString();
+                try
+                {
+                    if (keycodeToKeyFixes.First(it => s.Contains(it.Key)) is KeyValuePair<string, string> entry)
+                        s = s.Replace(entry.Key, entry.Value);
+                }
+                catch { }
+
+                try
+                {
+                    var parsed = Enum.Parse(TKey, s);
+                    KeyCodeToKeyEnumDict.Add(key, parsed);
+                }
+                catch
+                {
+                    KeyCodeToKeyEnumDict.Add(key, default);
+                }
+            }
+
+            return KeyCodeToKeyEnumDict[key];
         }
 
         // UI Input

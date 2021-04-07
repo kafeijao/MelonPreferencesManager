@@ -12,8 +12,9 @@ using MelonPrefManager.Runtime;
 using MelonPrefManager.UI;
 using UnityEngine;
 
+[assembly: MelonGame()]
+[assembly: MelonPlatformDomain(MelonPlatformDomainAttribute.CompatibleDomains.UNIVERSAL)]
 [assembly: MelonInfo(typeof(PrefManagerMod), PrefManagerMod.NAME, PrefManagerMod.VERSION, PrefManagerMod.AUTHOR)]
-[assembly: MelonGame(null, null)]
 
 namespace MelonPrefManager
 {
@@ -21,7 +22,7 @@ namespace MelonPrefManager
     {
         public const string NAME = "MelonPreferencesManager";
         public const string AUTHOR = "Sinai";
-        public const string VERSION = "0.4.3";
+        public const string VERSION = "0.4.4";
 
         public static PrefManagerMod Instance { get; private set; }
 

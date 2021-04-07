@@ -16,11 +16,14 @@ namespace MelonPrefManager.UI.InteractiveValues
         internal Button confirmButton;
         internal Button cancelButton;
 
+        private bool isInputSystem;
+
         public InteractiveKeycode(object value, Type valueType) : base(value, valueType)
         {
+            isInputSystem = !(value is KeyCode);
         }
 
-        public override bool SupportsType(Type type) => type == typeof(KeyCode);
+        public override bool SupportsType(Type type) => type == typeof(KeyCode) || type.FullName == "UnityEngine.InputSystem.Key";
 
         public override void RefreshUIForValue()
         {
@@ -46,16 +49,30 @@ namespace MelonPrefManager.UI.InteractiveValues
             InputManager.BeginRebind(OnRebindKeyPressed, OnKeycodeConfirmed);
         }
 
-        private void OnRebindKeyPressed(KeyCode key)
+        private void OnRebindKeyPressed(KeyCode kc)
         {
-            labelText.text = $"<i>{key.ToString()}</i>";
+            if (!isInputSystem)
+            {
+                labelText.text = $"<i>{kc.ToString()}</i>";
+            }
+            else
+            {
+                object key = InputSystem.KeyCodeToKeyEnumDict[kc];
+                labelText.text = $"<i>{key.ToString()}</i>";
+            }
+
             confirmButton.interactable = true;
         }
 
         private void OnKeycodeConfirmed(KeyCode? kc)
         {
             if (kc != null)
-                Value = kc;
+            {
+                if (!isInputSystem)
+                    Value = kc;
+                else
+                    Value = InputSystem.KeyCodeToKeyEnumDict[(KeyCode)kc];
+            }
 
             Owner.SetValueFromIValue();
             RefreshUIForValue();
