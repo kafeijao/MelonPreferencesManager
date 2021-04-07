@@ -52,25 +52,27 @@ namespace MelonPrefManager.Input
                 return;
             }
 
-            allKeycodes = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>();
+            var keycodes = Enum.GetValues(typeof(KeyCode));
+            var list = new List<KeyCode>();
+            foreach (KeyCode kc in keycodes)
+            {
+                string s = kc.ToString();
+                if (!s.Contains("Mouse") && !s.Contains("Joystick"))
+                    list.Add(kc);
+            }
+            allKeycodes = list.ToArray();
 
             CursorUnlocker.Init();
         }
 
         public static bool GetKeyDown(KeyCode key)
         {
-            if (Rebinding)
-                return false;
-
-            return m_inputModule.GetKeyDown(key);
+            return !Rebinding && m_inputModule.GetKeyDown(key);
         }
 
         public static bool GetKey(KeyCode key)
         {
-            if (Rebinding)
-                return false;
-
-            return m_inputModule.GetKey(key);
+            return !Rebinding && m_inputModule.GetKey(key);
         }
 
         public static bool GetMouseButtonDown(int btn) 
@@ -95,38 +97,36 @@ namespace MelonPrefManager.Input
         {
             if (Rebinding)
             {
-                var kc = GetCurrentKey();
+                var kc = GetCurrentKeyDown();
                 if (kc != null)
-                    onRebindPressed?.Invoke((KeyCode)kc);
+                {
+                    LastRebindKey = kc;
+                    onRebindPressed?.Invoke((KeyCode)kc); 
+                }
             }    
         }
 
-        public static KeyCode? GetCurrentKey()
+        public static KeyCode? GetCurrentKeyDown()
         {
             foreach (var kc in allKeycodes)
             {
                 if (m_inputModule.GetKeyDown(kc))
-                {
-                    LastRebindKey = kc;
                     return kc;
-                }
             }
 
             return null;
         }
 
-        public static KeyCode? EndRebind()
+        public static void EndRebind()
         {
             if (!Rebinding)
-                return null;
+                return;
 
             Rebinding = false;
             onRebindFinished?.Invoke(LastRebindKey);
 
             onRebindFinished = null;
             onRebindPressed = null;
-
-            return LastRebindKey;
         }
 
         public static void ActivateUIModule() => m_inputModule.ActivateModule();
