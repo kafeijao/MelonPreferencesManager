@@ -69,7 +69,7 @@ namespace MelonPrefManager
         //    testCtg.CreateEntry("Int slider", 32, description: "You can use sliders for any number type", validator: new ValueRange<int>(0, 100));
         //    testCtg.CreateEntry("Float slider", 666f, description: "This setting has a ValueRange of 0 to 1000", validator: new ValueRange<float>(0, 1000f));
         //    testCtg.CreateEntry("Key binding", KeyCode.Dollar, description: "KeyCodes have a special rebind helper");
-        //    testCtg.CreateEntry("Enum example", CameraType.Game, description: "Enums use a dropdown");
+        //    testCtg.CreateEntry("Enum example", CameraClearFlags.Color, description: "Enums use a dropdown");
         //    testCtg.CreateEntry("Multiline Input", (string)null, description: "Strings use a multi-line input field");
         //    testCtg.CreateEntry("My favourite color", Color.magenta, description: "Colors have a special color picker");
         //    testCtg.CreateEntry("Float structs", Vector3.down, description: "Vector/Quaternion/etc use an editor like this");
