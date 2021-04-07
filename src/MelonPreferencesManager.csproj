@@ -115,6 +115,7 @@
     <Compile Include="UI\InteractiveValues\InteractiveColor.cs" />
     <Compile Include="UI\InteractiveValues\InteractiveEnum.cs" />
     <Compile Include="UI\InteractiveValues\InteractiveFlags.cs" />
+    <Compile Include="UI\InteractiveValues\InteractiveKeycode.cs" />
     <Compile Include="UI\InteractiveValues\InteractiveNumber.cs" />
     <Compile Include="UI\InteractiveValues\InteractiveString.cs" />
     <Compile Include="UI\InteractiveValues\InteractiveTomlObject.cs" />

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using MelonPrefManager.UI;
+using System.Linq;
 #if CPP
 using UnhollowerRuntimeLib;
 #endif
@@ -84,29 +85,59 @@ namespace MelonPrefManager.Input
 
         internal static Dictionary<KeyCode, object> ActualKeyDict = new Dictionary<KeyCode, object>();
 
+        internal static Dictionary<string, string> enumNameFixes = new Dictionary<string, string>
+        {
+            { "Control", "Ctrl" },
+            { "Return", "Enter" },
+            { "Alpha", "Digit" },
+            { "Keypad", "Numpad" },
+            { "Numlock", "NumLock" },
+            { "Print", "PrintScreen" },
+            { "BackQuote", "Backquote" }
+        };
+
         internal object GetActualKey(KeyCode key)
         {
             if (!ActualKeyDict.ContainsKey(key))
             {
                 var s = key.ToString();
-                if (s.Contains("Control"))
-                    s = s.Replace("Control", "Ctrl");
-                else if (s.Contains("Return"))
-                    s = "Enter";
+                try
+                {
+                    if (enumNameFixes.First(it => s.Contains(it.Key)) is KeyValuePair<string, string> entry)
+                        s = s.Replace(entry.Key, entry.Value);
+                }
+                catch { }
 
-                var parsed = Enum.Parse(TKey, s);
-                var actualKey = m_kbIndexer.GetValue(CurrentKeyboard, new object[] { parsed });
-
-                ActualKeyDict.Add(key, actualKey);
+                try
+                {
+                    var parsed = Enum.Parse(TKey, s);
+                    var actualKey = m_kbIndexer.GetValue(CurrentKeyboard, new object[] { parsed });
+                    ActualKeyDict.Add(key, actualKey);
+                }
+                catch
+                {
+                    ActualKeyDict.Add(key, default);
+                }
             }
 
             return ActualKeyDict[key];
         }
 
-        public bool GetKeyDown(KeyCode key) => (bool)m_btnWasPressedProp.GetValue(GetActualKey(key), null);
+        public bool GetKeyDown(KeyCode key)
+        {
+            var obj = GetActualKey(key);
+            if (obj == default)
+                return false;
+            return (bool)m_btnWasPressedProp.GetValue(GetActualKey(key), null);
+        }
 
-        public bool GetKey(KeyCode key) => (bool)m_btnIsPressedProp.GetValue(GetActualKey(key), null);
-
+        public bool GetKey(KeyCode key)
+        {
+            var obj = GetActualKey(key);
+            if (obj == default)
+                return false;
+            return (bool)m_btnIsPressedProp.GetValue(GetActualKey(key), null);
+        }
         public bool GetMouseButtonDown(int btn)
         {
             return btn switch

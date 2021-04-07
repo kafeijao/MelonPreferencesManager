@@ -2,6 +2,8 @@
 using UnityEngine;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine.EventSystems;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace MelonPrefManager.Input
 {
@@ -20,21 +22,14 @@ namespace MelonPrefManager.Input
 
         public static Vector3 MousePosition => m_inputModule.MousePosition;
 
-        public static bool GetKeyDown(KeyCode key) => m_inputModule.GetKeyDown(key);
-        public static bool GetKey(KeyCode key) => m_inputModule.GetKey(key);
+        public static bool Rebinding { get; internal set; }
+        public static KeyCode? LastRebindKey { get; internal set; }
 
-        public static bool GetMouseButtonDown(int btn) => m_inputModule.GetMouseButtonDown(btn);
-        public static bool GetMouseButton(int btn) => m_inputModule.GetMouseButton(btn);
+        internal static IEnumerable<KeyCode> allKeycodes;
+        internal static Action<KeyCode> onRebindPressed;
+        internal static Action<KeyCode?> onRebindFinished;
 
         public static BaseInputModule UIInput => m_inputModule.UIModule;
-
-        public static void ActivateUIModule() => m_inputModule.ActivateModule();
-
-        public static void AddUIModule()
-        {
-            m_inputModule.AddUIInputModule();
-            ActivateUIModule();
-        }
 
         public static void Init()
         {
@@ -54,9 +49,92 @@ namespace MelonPrefManager.Input
                 PrefManagerMod.LogWarning("Could not find any Input module!");
                 m_inputModule = new NoInput();
                 CurrentType = InputType.None;
+                return;
             }
 
+            allKeycodes = Enum.GetValues(typeof(KeyCode)).Cast<KeyCode>();
+
             CursorUnlocker.Init();
+        }
+
+        public static bool GetKeyDown(KeyCode key)
+        {
+            if (Rebinding)
+                return false;
+
+            return m_inputModule.GetKeyDown(key);
+        }
+
+        public static bool GetKey(KeyCode key)
+        {
+            if (Rebinding)
+                return false;
+
+            return m_inputModule.GetKey(key);
+        }
+
+        public static bool GetMouseButtonDown(int btn) 
+            => m_inputModule.GetMouseButtonDown(btn);
+
+        public static bool GetMouseButton(int btn) 
+            => m_inputModule.GetMouseButton(btn);
+
+        public static void BeginRebind(Action<KeyCode> onSelection, Action<KeyCode?> onFinished)
+        {
+            if (Rebinding)
+                return;
+
+            onRebindPressed = onSelection;
+            onRebindFinished = onFinished;
+
+            Rebinding = true;
+            LastRebindKey = null;
+        }
+
+        public static void Update()
+        {
+            if (Rebinding)
+            {
+                var kc = GetCurrentKey();
+                if (kc != null)
+                    onRebindPressed?.Invoke((KeyCode)kc);
+            }    
+        }
+
+        public static KeyCode? GetCurrentKey()
+        {
+            foreach (var kc in allKeycodes)
+            {
+                if (m_inputModule.GetKeyDown(kc))
+                {
+                    LastRebindKey = kc;
+                    return kc;
+                }
+            }
+
+            return null;
+        }
+
+        public static KeyCode? EndRebind()
+        {
+            if (!Rebinding)
+                return null;
+
+            Rebinding = false;
+            onRebindFinished?.Invoke(LastRebindKey);
+
+            onRebindFinished = null;
+            onRebindPressed = null;
+
+            return LastRebindKey;
+        }
+
+        public static void ActivateUIModule() => m_inputModule.ActivateModule();
+
+        public static void AddUIModule()
+        {
+            m_inputModule.AddUIInputModule();
+            ActivateUIModule();
         }
     }
 }

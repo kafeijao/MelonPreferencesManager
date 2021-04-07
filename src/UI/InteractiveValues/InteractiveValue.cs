@@ -31,6 +31,9 @@ namespace MelonPrefManager.UI.InteractiveValues
             // String
             else if (type == typeof(string))
                 return typeof(InteractiveString);
+            // KeyCode
+            else if (type == typeof(KeyCode))
+                return typeof(InteractiveKeycode);
             // Flags and Enum
             else if (typeof(Enum).IsAssignableFrom(type))
                 if (type.GetCustomAttributes(typeof(FlagsAttribute), true) is object[] fa && fa.Any())

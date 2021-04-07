@@ -24,6 +24,7 @@ The UI supports the following types by default:
 * Toggle: `bool`
 * Number input: `int`, `float` etc (any primitive number type)
 * String input: `string`
+* Key binder: `KeyCode`
 * Dropdown: `enum`
 * Multi-toggle: `enum` with `[Flags]` attribute
 * Color picker: `Color`
