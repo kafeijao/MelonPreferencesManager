@@ -71,6 +71,8 @@ namespace MelonPrefManager.UI.InteractiveValues
 
             if (Owner.RefConfig.Validator is IValueRange range)
             {
+                Owner.m_mainLabel.text += $" <color=grey><i>[{range.MinValue.ToString()} - {range.MaxValue.ToString()}]</i></color>";
+
                 var sliderObj = UIFactory.CreateSlider(m_mainContent, "ValueSlider", out Slider slider);
                 UIFactory.SetLayoutElement(sliderObj, minWidth: 250, minHeight: 25);
 

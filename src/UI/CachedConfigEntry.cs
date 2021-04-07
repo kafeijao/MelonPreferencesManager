@@ -18,10 +18,12 @@ namespace MelonPrefManager.UI
 
         // UI
         public bool UIConstructed;
-        public GameObject parentContent;
+        public GameObject m_parentContent;
         public GameObject ContentGroup;
         public RectTransform ContentRect;
         public GameObject SubContentGroup;
+
+        public Text m_mainLabel;
 
         internal GameObject m_UIroot;
         internal GameObject m_undoButton;
@@ -31,7 +33,7 @@ namespace MelonPrefManager.UI
         public CachedConfigEntry(MelonPreferences_Entry config, GameObject parent)
         {
             RefConfig = config;
-            parentContent = parent;
+            m_parentContent = parent;
 
             EnsureConfigValid();
 
@@ -138,7 +140,7 @@ namespace MelonPrefManager.UI
         {
             UIConstructed = true;
 
-            m_UIroot = UIFactory.CreateVerticalGroup(parentContent, "CacheObjectBase.MainContent", true, false, true, true, 0, 
+            m_UIroot = UIFactory.CreateVerticalGroup(m_parentContent, "CacheObjectBase.MainContent", true, false, true, true, 0, 
                 default, new Color(1,1,1,0));
             ContentRect = m_UIroot.GetComponent<RectTransform>();
             ContentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 25);
@@ -153,10 +155,10 @@ namespace MelonPrefManager.UI
 
             // config entry label
 
-            var configLabel = UIFactory.CreateLabel(horiGroup, "ConfigLabel", this.RefConfig.DisplayName, TextAnchor.MiddleLeft, 
+            m_mainLabel = UIFactory.CreateLabel(horiGroup, "ConfigLabel", this.RefConfig.DisplayName, TextAnchor.MiddleLeft, 
                 new Color(0.7f, 1, 0.7f));
-            configLabel.text += $" <i>({SignatureHighlighter.ParseFullSyntax(RefConfig.GetReflectedType(), false)})</i>";
-            UIFactory.SetLayoutElement(configLabel.gameObject, minWidth: 200, minHeight: 22, flexibleWidth: 9999, flexibleHeight: 0);
+            m_mainLabel.text += $" <i>({SignatureHighlighter.ParseFullSyntax(RefConfig.GetReflectedType(), false)})</i>";
+            UIFactory.SetLayoutElement(m_mainLabel.gameObject, minWidth: 200, minHeight: 22, flexibleWidth: 9999, flexibleHeight: 0);
 
             // Undo button
 
