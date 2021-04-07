@@ -24,11 +24,11 @@ The UI supports the following types by default:
 * Toggle: `bool`
 * Number input: `int`, `float` etc (any primitive number type)
 * String input: `string`
-* Key binder: `KeyCode`
+* Key binder: `UnityEngine.KeyCode` or `UnityEngine.InputSystem.Key`
 * Dropdown: `enum`
 * Multi-toggle: `enum` with `[Flags]` attribute
-* Color picker: `Color`
-* Struct editor: `Vector2`, `Vector3`, `Vector4`, `Quaternion`, etc
+* Color picker: `UnityEngine.Color`
+* Struct editor: `UnityEngine.Vector3`, `UnityEngine.Quaternion`, etc
 * Toml input: Arrays and anything with a corresponding Mapper registered to `MelonPreferences.Mapper`.
 
 To make a slider, use a number type and provide a `ValueRange` for the Validator when creating the entry. For example:
