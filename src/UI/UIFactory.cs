@@ -309,18 +309,18 @@ namespace MelonPrefManager.UI
 
             Image bgImage = bgObj.AddComponent<Image>();
             bgImage.type = Image.Type.Sliced;
-            bgImage.color = new Color(0.15f, 0.15f, 0.15f, 1.0f);
+            bgImage.color = new Color(0.03f, 0.03f, 0.03f, 1.0f);
 
             RectTransform bgRect = bgObj.GetComponent<RectTransform>();
-            bgRect.anchorMin = new Vector2(0f, 0.25f);
-            bgRect.anchorMax = new Vector2(1f, 0.75f);
+            bgRect.anchorMin = new Vector2(0f, 0.3f);
+            bgRect.anchorMax = new Vector2(1f, 0.7f);
             bgRect.sizeDelta = new Vector2(0f, 0f);
 
             RectTransform fillAreaRect = fillAreaObj.GetComponent<RectTransform>();
-            fillAreaRect.anchorMin = new Vector2(0f, 0.25f);
-            fillAreaRect.anchorMax = new Vector2(1f, 0.75f);
+            fillAreaRect.anchorMin = new Vector2(0f, 0.3f);
+            fillAreaRect.anchorMax = new Vector2(1f, 0.7f);
             fillAreaRect.anchoredPosition = new Vector2(-5f, 0f);
-            fillAreaRect.sizeDelta = new Vector2(-20f, 0f);
+            fillAreaRect.sizeDelta = new Vector2(-15f, 0f);
 
             Image fillImage = fillObj.AddComponent<Image>();
             fillImage.type = Image.Type.Sliced;
@@ -329,14 +329,14 @@ namespace MelonPrefManager.UI
             fillObj.GetComponent<RectTransform>().sizeDelta = new Vector2(10f, 0f);
 
             RectTransform handleSlideRect = handleSlideAreaObj.GetComponent<RectTransform>();
-            handleSlideRect.sizeDelta = new Vector2(-20f, 0f);
+            handleSlideRect.sizeDelta = new Vector2(-15f, 0f);
             handleSlideRect.anchorMin = new Vector2(0f, 0f);
             handleSlideRect.anchorMax = new Vector2(1f, 1f);
 
             Image handleImage = handleObj.AddComponent<Image>();
             handleImage.color = new Color(0.5f, 0.5f, 0.5f, 1.0f);
 
-            handleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(20f, 0f);
+            handleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(15f, 0f);
 
             slider = sliderObj.AddComponent<Slider>();
             slider.fillRect = fillObj.GetComponent<RectTransform>();
@@ -344,8 +344,8 @@ namespace MelonPrefManager.UI
             slider.targetGraphic = handleImage;
             slider.direction = Slider.Direction.LeftToRight;
 
-            slider.colors = RuntimeProvider.Instance.SetColorBlock(slider.colors, new Color(0.4f, 0.4f, 0.4f), 
-                new Color(0.55f, 0.55f, 0.55f), new Color(0.3f, 0.3f, 0.3f));
+            slider.colors = RuntimeProvider.Instance.SetColorBlock(slider.colors, new Color(0.5f, 0.5f, 0.5f), 
+                new Color(0.6f, 0.6f, 0.6f), new Color(0.4f, 0.4f, 0.4f));
 
             return sliderObj;
         }

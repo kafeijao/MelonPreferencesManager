@@ -66,14 +66,10 @@ namespace MelonPrefManager.Input
         }
 
         public static bool GetKeyDown(KeyCode key)
-        {
-            return !Rebinding && m_inputModule.GetKeyDown(key);
-        }
+            => !Rebinding && m_inputModule.GetKeyDown(key);
 
         public static bool GetKey(KeyCode key)
-        {
-            return !Rebinding && m_inputModule.GetKey(key);
-        }
+            => !Rebinding && m_inputModule.GetKey(key);
 
         public static bool GetMouseButtonDown(int btn) 
             => m_inputModule.GetMouseButtonDown(btn);

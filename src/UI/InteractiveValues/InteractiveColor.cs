@@ -55,24 +55,24 @@ namespace MelonPrefManager.UI.InteractiveValues
             var baseHoriGroup = UIFactory.CreateHorizontalGroup(m_mainContent, "ColorEditor", false, false, true, true, 5,
                 default, new Color(1, 1, 1, 0), TextAnchor.MiddleLeft);
 
-            // vert group (editors)
-
-            var editorGroup = UIFactory.CreateVerticalGroup(baseHoriGroup, "EditorsGroup", false, false, true, true, 3, new Vector4(3, 3, 3, 3),
-                new Color(1,1,1,0));
-
-            var grid = UIFactory.CreateGridGroup(editorGroup, "Grid", new Vector2(290, 25), new Vector2(2, 2), new Color(1, 1, 1, 0));
-            UIFactory.SetLayoutElement(grid, minWidth: 580, minHeight: 60, flexibleWidth: 0);
-
-            for (int i = 0; i < 4; i++)
-                AddEditorRow(i, grid);
-
             var imgHolder = UIFactory.CreateVerticalGroup(baseHoriGroup, "ImgHolder", true, true, true, true, 0, new Vector4(1, 1, 1, 1),
                 new Color(0.08f, 0.08f, 0.08f));
-            UIFactory.SetLayoutElement(imgHolder, minWidth: 50, minHeight: 60, flexibleWidth: 999, flexibleHeight: 0);
+            UIFactory.SetLayoutElement(imgHolder, minWidth: 50, minHeight: 25, flexibleWidth: 999, flexibleHeight: 0);
 
             var imgObj = UIFactory.CreateUIObject("ColorImageHelper", imgHolder, new Vector2(100, 25));
             m_colorImage = imgObj.AddComponent<Image>();
             m_colorImage.color = (Color)this.Value;
+
+            // sliders / inputs
+
+            var editorGroup = UIFactory.CreateVerticalGroup(baseHoriGroup, "EditorsGroup", false, false, true, true, 3, new Vector4(3, 3, 3, 3),
+                new Color(1, 1, 1, 0));
+
+            var grid = UIFactory.CreateGridGroup(editorGroup, "Grid", new Vector2(140, 25), new Vector2(2, 2), new Color(1, 1, 1, 0));
+            UIFactory.SetLayoutElement(grid, minWidth: 580, minHeight: 25, flexibleWidth: 900);
+
+            for (int i = 0; i < 4; i++)
+                AddEditorRow(i, grid);
 
             RefreshUIForValue();
         }
@@ -83,10 +83,10 @@ namespace MelonPrefManager.UI.InteractiveValues
                 false, true, true, true, 5, default, new Color(1, 1, 1, 0));
 
             var label = UIFactory.CreateLabel(row, "RowLabel", $"{s_fieldNames[index]}:", TextAnchor.MiddleRight, Color.cyan);
-            UIFactory.SetLayoutElement(label.gameObject, minWidth: 20, flexibleWidth: 0, minHeight: 25);
+            UIFactory.SetLayoutElement(label.gameObject, minWidth: 17, flexibleWidth: 0, minHeight: 25);
 
             var inputFieldObj = UIFactory.CreateInputField(row, "InputField", "...", 14, 3, 1);
-            UIFactory.SetLayoutElement(inputFieldObj, minWidth: 70, minHeight: 25, flexibleWidth: 0);
+            UIFactory.SetLayoutElement(inputFieldObj, minWidth: 40, minHeight: 25, flexibleWidth: 0);
 
             var inputField = inputFieldObj.GetComponent<InputField>();
             m_inputs[index] = inputField;
@@ -101,7 +101,7 @@ namespace MelonPrefManager.UI.InteractiveValues
 
             var sliderObj = UIFactory.CreateSlider(row, "Slider", out Slider slider);
             m_sliders[index] = slider;
-            UIFactory.SetLayoutElement(sliderObj, minHeight: 25, flexibleWidth: 999, flexibleHeight: 0);
+            UIFactory.SetLayoutElement(sliderObj, minHeight: 25, minWidth: 70, flexibleWidth: 999, flexibleHeight: 0);
             slider.minValue = 0;
             slider.maxValue = 1;
             slider.value = GetValueFromColor();
