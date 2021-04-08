@@ -18,6 +18,7 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         public MethodInfo ParseMethod => m_parseMethod ??= Value.GetType().GetMethod("Parse", new Type[] { typeof(string) });
         private MethodInfo m_parseMethod;
+        private Slider m_slider;
 
         public InteractiveNumber(object value, Type valueType) : base(value, valueType) { }
 
@@ -30,6 +31,9 @@ namespace MelonPrefManager.UI.InteractiveValues
 
             if (!m_valueInput.gameObject.activeSelf)
                 m_valueInput.gameObject.SetActive(true);
+
+            if (m_slider)
+                m_slider.value = (float)Convert.ChangeType(Value, typeof(float));
         }
 
         internal void SetValueFromInput()
@@ -37,6 +41,10 @@ namespace MelonPrefManager.UI.InteractiveValues
             try
             {
                 Value = ParseMethod.Invoke(null, new object[] { m_valueInput.text });
+
+                if (Owner.RefConfig.Validator?.IsValid(Value) ?? false)
+                    throw new Exception();
+
                 Owner.SetValueFromIValue();
                 RefreshUIForValue();
 
@@ -63,35 +71,35 @@ namespace MelonPrefManager.UI.InteractiveValues
                 SetValueFromInput();
             });
 
-            var type = Value.GetType();
-            if (type == typeof(float) || type == typeof(double) || type == typeof(decimal))
-                m_valueInput.characterValidation = InputField.CharacterValidation.Decimal;
-            else
-                m_valueInput.characterValidation = InputField.CharacterValidation.Integer;
+            //var type = Value.GetType();
+            //if (type == typeof(float) || type == typeof(double) || type == typeof(decimal))
+            //    m_valueInput.characterValidation = InputField.CharacterValidation.Decimal;
+            //else
+            //    m_valueInput.characterValidation = InputField.CharacterValidation.Integer;
 
             if (Owner.RefConfig.Validator is IValueRange range)
             {
                 Owner.m_mainLabel.text += $" <color=grey><i>[{range.MinValue.ToString()} - {range.MaxValue.ToString()}]</i></color>";
 
-                var sliderObj = UIFactory.CreateSlider(m_mainContent, "ValueSlider", out Slider slider);
+                var sliderObj = UIFactory.CreateSlider(m_mainContent, "ValueSlider", out m_slider);
                 UIFactory.SetLayoutElement(sliderObj, minWidth: 250, minHeight: 25);
 
-                slider.minValue = (float)Convert.ChangeType(range.MinValue, typeof(float));
-                slider.maxValue = (float)Convert.ChangeType(range.MaxValue, typeof(float));
+                m_slider.minValue = (float)Convert.ChangeType(range.MinValue, typeof(float));
+                m_slider.maxValue = (float)Convert.ChangeType(range.MaxValue, typeof(float));
 
-                slider.value = (float)Convert.ChangeType(Value, typeof(float));
+                m_slider.value = (float)Convert.ChangeType(Value, typeof(float));
 
-                slider.onValueChanged.AddListener((float val) =>
+                m_slider.onValueChanged.AddListener((float val) =>
                 {
                     Value = Convert.ChangeType(val, FallbackType);
                     Owner.SetValueFromIValue();
                     m_valueInput.text = Value.ToString();
                 });
 
-                m_valueInput.onValueChanged.AddListener((string val) => 
-                {
-                    slider.value = (float)Convert.ChangeType(Value, typeof(float));
-                });
+                //m_valueInput.onValueChanged.AddListener((string val) => 
+                //{
+                //    slider.value = (float)Convert.ChangeType(Value, typeof(float));
+                //});
             }
         }
     }

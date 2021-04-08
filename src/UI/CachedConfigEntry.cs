@@ -96,7 +96,6 @@ namespace MelonPrefManager.UI
             IValue.OnValueUpdated();
 
             OnSaveOrUndo();
-            PreferencesEditor.OnEntryUndo(this);
         }
 
         public void RevertToDefault()
@@ -110,6 +109,7 @@ namespace MelonPrefManager.UI
         internal void OnSaveOrUndo()
         {
             m_undoButton.SetActive(false);
+            PreferencesEditor.OnEntryUndo(this);
         }
 
         public void Enable()
