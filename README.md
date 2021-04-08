@@ -27,7 +27,7 @@ The UI supports the following types by default:
 * Key binder: `UnityEngine.KeyCode` or `UnityEngine.InputSystem.Key`
 * Dropdown: `enum`
 * Multi-toggle: `enum` with `[Flags]` attribute
-* Color picker: `UnityEngine.Color`
+* Color picker: `UnityEngine.Color` or `UnityEngine.Color32`
 * Struct editor: `UnityEngine.Vector3`, `UnityEngine.Quaternion`, etc
 * Toml input: Arrays and anything with a corresponding Mapper registered to `MelonPreferences.Mapper`.
 

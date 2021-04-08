@@ -17,7 +17,7 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         public InteractiveColor(object value, Type valueType) : base(value, valueType) { }
 
-        public override bool SupportsType(Type type) => typeof(Color).IsAssignableFrom(type);
+        public override bool SupportsType(Type type) => type == typeof(Color) || type == typeof(Color32);
 
         public override void RefreshUIForValue()
         {
@@ -28,15 +28,26 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         private void RefreshColorUI()
         {
-            var color = (Color)this.Value;
+            if (this.Value is Color32 c32)
+            {
+                m_inputs[0].text = c32.r.ToString();
+                m_inputs[1].text = c32.g.ToString();
+                m_inputs[2].text = c32.b.ToString();
+                m_inputs[3].text = c32.a.ToString();
 
-            m_inputs[0].text = color.r.ToString();
-            m_inputs[1].text = color.g.ToString();
-            m_inputs[2].text = color.b.ToString();
-            m_inputs[3].text = color.a.ToString();
+                if (m_colorImage)
+                    m_colorImage.color = c32;
+            }
+            else if (this.Value is Color color)
+            {
+                m_inputs[0].text = color.r.ToString();
+                m_inputs[1].text = color.g.ToString();
+                m_inputs[2].text = color.b.ToString();
+                m_inputs[3].text = color.a.ToString();
 
-            if (m_colorImage)
-                m_colorImage.color = color;
+                if (m_colorImage)
+                    m_colorImage.color = color;
+            }
         }
 
         protected internal override void OnToggleSubcontent(bool toggle)
@@ -61,7 +72,7 @@ namespace MelonPrefManager.UI.InteractiveValues
 
             var imgObj = UIFactory.CreateUIObject("ColorImageHelper", imgHolder, new Vector2(100, 25));
             m_colorImage = imgObj.AddComponent<Image>();
-            m_colorImage.color = (Color)this.Value;
+            m_colorImage.color = Value is Color ? (Color)this.Value : (Color)(Color32)this.Value;
 
             // sliders / inputs
 
@@ -90,30 +101,67 @@ namespace MelonPrefManager.UI.InteractiveValues
 
             var inputField = inputFieldObj.GetComponent<InputField>();
             m_inputs[index] = inputField;
-            inputField.characterValidation = InputField.CharacterValidation.Decimal;
+            inputField.characterValidation = Value is Color
+                                             ? InputField.CharacterValidation.Decimal
+                                             : InputField.CharacterValidation.Integer; // color32 uses byte
 
             inputField.onValueChanged.AddListener((string value) => 
             {
-                float val = float.Parse(value);
-                SetValueToColor(val);
-                m_sliders[index].value = val;
+                if (Value is Color)
+                {
+                    float val = float.Parse(value);
+                    SetValueToColor(val);
+                    m_sliders[index].value = val;
+                }
+                else
+                {
+                    byte val = byte.Parse(value);
+                    SetValueToColor32(val);
+                    m_sliders[index].value = val;
+                }
             });
 
             var sliderObj = UIFactory.CreateSlider(row, "Slider", out Slider slider);
             m_sliders[index] = slider;
             UIFactory.SetLayoutElement(sliderObj, minHeight: 25, minWidth: 70, flexibleWidth: 999, flexibleHeight: 0);
             slider.minValue = 0;
-            slider.maxValue = 1;
-            slider.value = GetValueFromColor();
+            if (Value is Color)
+            {
+                slider.maxValue = 1;
+                slider.value = GetValueFromColor();
+            }
+            else
+            {
+                slider.maxValue = 255;
+                slider.value = GetValueFromColor32();
+            }
 
             slider.onValueChanged.AddListener((float value) =>
             {
-                inputField.text = value.ToString();
-                SetValueToColor(value);
-                m_inputs[index].text = value.ToString();
+                try
+                {
+
+                    if (Value is Color32)
+                    {
+                        var val = ((byte)value).ToString();
+                        inputField.text = val;
+                        SetValueToColor32((byte)value);
+                        m_inputs[index].text = val;
+                    }
+                    else
+                    {
+                        inputField.text = value.ToString();
+                        SetValueToColor(value);
+                        m_inputs[index].text = value.ToString();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    PrefManagerMod.Log(ex.ToString());
+                }
             });
 
-            // methods for writing to the color for this field
+            // methods for working with Color
 
             void SetValueToColor(float floatValue)
             {
@@ -133,14 +181,44 @@ namespace MelonPrefManager.UI.InteractiveValues
             float GetValueFromColor()
             {
                 Color _color = (Color)Value;
+                return index switch
+                {
+                    0 => _color.r,
+                    1 => _color.g,
+                    2 => _color.b,
+                    3 => _color.a,
+                    _ => throw new NotImplementedException(),
+                };
+            }
+
+            // methods for working with Color32
+
+            void SetValueToColor32(byte byteValue)
+            {
+                Color32 _color = (Color32)Value;
                 switch (index)
                 {
-                    case 0: return _color.r;
-                    case 1: return _color.g;
-                    case 2: return _color.b;
-                    case 3: return _color.a;
-                    default: throw new NotImplementedException();
+                    case 0: _color.r = byteValue; break;
+                    case 1: _color.g = byteValue; break;
+                    case 2: _color.b = byteValue; break;
+                    case 3: _color.a = byteValue; break;
                 }
+                Value = _color;
+                m_colorImage.color = _color;
+                Owner.SetValueFromIValue();
+            }
+
+            byte GetValueFromColor32()
+            {
+                Color32 _color = (Color32)Value;
+                return index switch
+                {
+                    0 => _color.r,
+                    1 => _color.g,
+                    2 => _color.b,
+                    3 => _color.a,
+                    _ => throw new NotImplementedException(),
+                };
             }
         }
     }

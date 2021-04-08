@@ -41,7 +41,7 @@ namespace MelonPrefManager.UI.InteractiveValues
                 else
                     return typeof(InteractiveEnum);
             // Color
-            else if (typeof(Color).IsAssignableFrom(type))
+            else if (type == typeof(Color) || type == typeof(Color32))
                 return typeof(InteractiveColor);
             // Vector / Rect
             else if (InteractiveFloatStruct.IsTypeSupported(type))
