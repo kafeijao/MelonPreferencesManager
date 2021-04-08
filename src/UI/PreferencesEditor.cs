@@ -135,7 +135,9 @@ namespace MelonPrefManager.UI
 
             foreach (var entry in _currentCategory.Prefs)
             {
-                bool val = (string.IsNullOrEmpty(currentFilter) || entry.RefEntry.DisplayName.ToLower().Contains(currentFilter))
+                bool val = (string.IsNullOrEmpty(currentFilter) 
+                                || entry.RefEntry.DisplayName.ToLower().Contains(currentFilter) 
+                                || (entry.RefEntry.Description?.ToLower().Contains(currentFilter) ?? false))
                            && (!entry.IsHidden || ShowHiddenConfigs);
 
                 entry.content.SetActive(val);

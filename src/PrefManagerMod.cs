@@ -22,7 +22,7 @@ namespace MelonPrefManager
     {
         public const string NAME = "MelonPreferencesManager";
         public const string AUTHOR = "Sinai";
-        public const string VERSION = "0.4.5";
+        public const string VERSION = "0.4.6";
 
         public static PrefManagerMod Instance { get; private set; }
 
@@ -72,7 +72,7 @@ namespace MelonPrefManager
         //    testCtg.CreateEntry("Key binding", KeyCode.Dollar, description: "KeyCodes have a special rebind helper");
         //    testCtg.CreateEntry("Enum example", CameraClearFlags.Color, description: "Enums use a dropdown");
         //    testCtg.CreateEntry("Multiline Input", (string)null, description: "Strings use a multi-line input field");
-        //    testCtg.CreateEntry("My favourite color", new Color32(20,40,60,255), description: "Colors have a special color picker");
+        //    testCtg.CreateEntry("My favourite color", new Color32(20, 40, 60, 255), description: "Colors have a special color picker");
         //    testCtg.CreateEntry("Float structs", Vector3.down, description: "Vector/Quaternion/etc use an editor like this");
         //    testCtg.CreateEntry("Flag toggles", BindingFlags.Public, description: "Enums with [Flags] attribute use a multi-toggle");
         //    testCtg.CreateEntry("Arrays", new[] { 0f, 1f }, description: "Arrays and other types will use the default Toml input");

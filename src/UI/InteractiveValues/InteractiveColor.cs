@@ -140,7 +140,6 @@ namespace MelonPrefManager.UI.InteractiveValues
             {
                 try
                 {
-
                     if (Value is Color32)
                     {
                         var val = ((byte)value).ToString();

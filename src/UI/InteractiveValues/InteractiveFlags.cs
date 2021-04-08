@@ -68,6 +68,11 @@ namespace MelonPrefManager.UI.InteractiveValues
                     val += m_values[i].Value;
                 }
             }
+
+            // Cannot set nothing as the value.
+            if (string.IsNullOrEmpty(val))
+                return;
+
             var type = Value?.GetType() ?? FallbackType;
             Value = Enum.Parse(type, val);
             RefreshUIForValue();

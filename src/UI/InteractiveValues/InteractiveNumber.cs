@@ -83,13 +83,9 @@ namespace MelonPrefManager.UI.InteractiveValues
 
                 slider.onValueChanged.AddListener((float val) =>
                 {
-                    float f = (float)Convert.ChangeType(Value, typeof(float));
-                    if (f == val)
-                        return;
-
                     Value = Convert.ChangeType(val, FallbackType);
                     Owner.SetValueFromIValue();
-                    m_valueInput.text = f.ToString();
+                    m_valueInput.text = Value.ToString();
                 });
 
                 m_valueInput.onValueChanged.AddListener((string val) => 
