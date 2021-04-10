@@ -159,7 +159,7 @@ namespace MelonPrefManager.UI
             obj.SetActive(true);
 
             var btn = info.listButton;
-            btn.colors = RuntimeProvider.Instance.SetColorBlock(btn.colors, _normalActiveColor);
+            RuntimeProvider.Instance.SetColorBlock(btn, _normalActiveColor);
 
             RefreshFilter();
         }
@@ -169,9 +169,7 @@ namespace MelonPrefManager.UI
             if (_currentCategory == null)
                 return;
 
-            var colors = _currentCategory.listButton.colors;
-            colors = RuntimeProvider.Instance.SetColorBlock(colors, _normalDisabledColor);
-            _currentCategory.listButton.colors = colors;
+            RuntimeProvider.Instance.SetColorBlock(_currentCategory.listButton, _normalDisabledColor);
             _currentCategory.contentObj.SetActive(false);
 
             _currentCategory = null;
@@ -213,16 +211,13 @@ namespace MelonPrefManager.UI
 
             // Hide button
 
-            ColorBlock colorBlock = new ColorBlock();
-            colorBlock = RuntimeProvider.Instance.SetColorBlock(colorBlock, new Color(1, 0.2f, 0.2f),
-                new Color(1, 0.6f, 0.6f), new Color(0.3f, 0.1f, 0.1f));
-
             var hideButton = UIFactory.CreateButton(titleBar,
                 "HideButton",
                 $"X",
-                () => { UIManager.ShowMenu = false; },
-                colorBlock);
+                () => { UIManager.ShowMenu = false; });
             UIFactory.SetLayoutElement(hideButton.gameObject, minWidth: 25, flexibleWidth: 0);
+            RuntimeProvider.Instance.SetColorBlock(hideButton, new Color(1, 0.2f, 0.2f),
+                new Color(1, 0.6f, 0.6f), new Color(0.3f, 0.1f, 0.1f));
 
             Text hideText = hideButton.GetComponentInChildren<Text>();
             hideText.color = Color.white;
@@ -235,8 +230,7 @@ namespace MelonPrefManager.UI
         {
             saveButton = UIFactory.CreateButton(mainContent, "SaveButton", "Save Preferences", SavePreferences);
             UIFactory.SetLayoutElement(saveButton.gameObject, minHeight: 35, flexibleWidth: 9999);
-            var colors = new ColorBlock() { colorMultiplier = 1 };
-            saveButton.colors = RuntimeProvider.Instance.SetColorBlock(colors, new Color(0.1f, 0.3f, 0.1f),
+            RuntimeProvider.Instance.SetColorBlock(saveButton, new Color(0.1f, 0.3f, 0.1f),
                 new Color(0.2f, 0.5f, 0.2f), new Color(0.1f, 0.2f, 0.1f), new Color(0.2f, 0.2f, 0.2f));
 
             saveButton.interactable = false;
@@ -280,10 +274,6 @@ namespace MelonPrefManager.UI
         {
             yield return null;
 
-            ColorBlock btnColors = new ColorBlock();
-            btnColors = RuntimeProvider.Instance.SetColorBlock(btnColors, _normalDisabledColor, new Color(0.7f, 1f, 0.7f),
-                new Color(0, 0.25f, 0));
-
             foreach (var ctg in MelonPreferences.Categories.OrderBy(it => it.DisplayName))
             {
                 if (_categoryInfos.ContainsKey(ctg.Identifier))
@@ -301,9 +291,10 @@ namespace MelonPrefManager.UI
                     var btn = UIFactory.CreateButton(CategoryListViewport,
                         "BUTTON_" + ctg.Identifier,
                         ctg.DisplayName,
-                        () => { SetActiveCategory(ctg.Identifier); },
-                        btnColors);
+                        () => { SetActiveCategory(ctg.Identifier); });
                     UIFactory.SetLayoutElement(btn.gameObject, flexibleWidth: 9999, minHeight: 30, flexibleHeight: 0);
+                    RuntimeProvider.Instance.SetColorBlock(btn, _normalDisabledColor, new Color(0.7f, 1f, 0.7f),
+                        new Color(0, 0.25f, 0));
 
                     info.listButton = btn;
 

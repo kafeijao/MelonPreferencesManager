@@ -31,6 +31,18 @@ namespace MelonPrefManager.Runtime.Il2Cpp
             return Il2CppCast(obj, castTo);
         }
 
+        public override T TryCast<T>(object obj)
+        {
+            try
+            {
+                return (T)Il2CppCast(obj, typeof(T));
+            }
+            catch
+            {
+                return default;
+            }
+        }
+
         public override string ProcessTypeNameInString(Type type, string theString, ref string typeName)
         {
             if (!Il2CppTypeNotNull(type))
@@ -292,7 +304,7 @@ namespace MelonPrefManager.Runtime.Il2Cpp
 
         public override bool LoadModule(string module)
         {
-            var path = Path.Combine("MelonLoader", "Managed", $"{module}.dll");
+            var path = Path.Combine("BepInEx", "unhollowed", $"{module}.dll");
             return LoadModuleInternal(path);
         }
 
