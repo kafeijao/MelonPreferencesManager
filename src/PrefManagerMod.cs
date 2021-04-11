@@ -22,7 +22,7 @@ namespace MelonPrefManager
     {
         public const string NAME = "MelonPreferencesManager";
         public const string AUTHOR = "Sinai";
-        public const string VERSION = "0.4.9";
+        public const string VERSION = "0.5.0";
 
         public static PrefManagerMod Instance { get; private set; }
 
@@ -38,12 +38,25 @@ namespace MelonPrefManager
             RuntimeProvider.Init();
             InputManager.Init();
             InitConfig();
-            UIFactory.Init();
-            UIManager.Init();
         }
+
+        private bool doneSetup;
+        private float startupDelay;
 
         public override void OnUpdate()
         {
+            if (startupDelay > 0f)
+                startupDelay -= Time.deltaTime;
+            if (startupDelay > 0f)
+                return;
+
+            if (!doneSetup)
+            {
+                UIFactory.Init();
+                UIManager.Init();
+                doneSetup = true;
+            }
+
             UIManager.Update();
             InputManager.Update();
         }

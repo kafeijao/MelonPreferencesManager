@@ -304,7 +304,7 @@ namespace MelonPrefManager.Runtime.Il2Cpp
 
         public override bool LoadModule(string module)
         {
-            var path = Path.Combine("BepInEx", "unhollowed", $"{module}.dll");
+            var path = Path.Combine("MelonLoader", "Managed", $"{module}.dll");
             return LoadModuleInternal(path);
         }
 
