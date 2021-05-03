@@ -42,8 +42,8 @@ namespace MelonPrefManager.UI
         public static bool ShowHiddenConfigs { get; internal set; }
 
         internal static GameObject MainPanel;
-        internal static GameObject CategoryListViewport;
-        internal static GameObject ConfigEditorViewport;
+        internal static GameObject CategoryListContent;
+        internal static GameObject ConfigEditorContent;
 
         internal static string Filter => currentFilter ?? "";
         private static string currentFilter;
@@ -71,7 +71,15 @@ namespace MelonPrefManager.UI
 
         public static void SavePreferences()
         {
-            MelonPreferences.Save();
+            PrefManagerMod.Log("Trying to save MelonPreferences....?");
+            try
+            {
+                MelonPreferences.Save();
+            }
+            catch (Exception ex)
+            {
+                PrefManagerMod.LogWarning(ex);
+            }
 
             for (int i = editingEntries.Count - 1; i >= 0; i--)
                 editingEntries.ElementAt(i).OnSaveOrUndo();
@@ -100,6 +108,78 @@ namespace MelonPrefManager.UI
 
         private static Color _normalDisabledColor = new Color(0.17f, 0.25f, 0.17f);
         private static Color _normalActiveColor = new Color(0, 0.45f, 0.05f);
+
+        // wait for end of chainloader setup. mods that set up preferences after this aren't compatible atm.
+        private static IEnumerator SetupCategories()
+        {
+            yield return null;
+
+            foreach (var ctg in MelonPreferences.Categories.OrderBy(it => it.DisplayName))
+            {
+                if (_categoryInfos.ContainsKey(ctg.Identifier))
+                    continue;
+
+                try
+                {
+                    var info = new CategoryInfo()
+                    {
+                        RefCategory = ctg,
+                    };
+
+                    // List button
+
+                    var btn = UIFactory.CreateButton(CategoryListContent,
+                        "BUTTON_" + ctg.Identifier,
+                        ctg.DisplayName,
+                        () => { SetActiveCategory(ctg.Identifier); });
+                    UIFactory.SetLayoutElement(btn.gameObject, flexibleWidth: 9999, minHeight: 30, flexibleHeight: 0);
+                    RuntimeProvider.Instance.SetColorBlock(btn, _normalDisabledColor, new Color(0.7f, 1f, 0.7f),
+                        new Color(0, 0.25f, 0));
+
+                    info.listButton = btn;
+
+                    // hide buttons for completely-hidden categories.
+                    if (!ctg.Entries.Any(it => !it.IsHidden))
+                    {
+                        btn.gameObject.SetActive(false);
+                        info.isCompletelyHidden = true;
+                    }
+
+                    // Editor content
+
+                    var content = UIFactory.CreateVerticalGroup(ConfigEditorContent, "CATEGORY_" + ctg.Identifier, true, false, true, true, 4,
+                        default, new Color(0.05f, 0.05f, 0.05f));
+
+                    // Actual config entry editors
+                    foreach (var pref in ctg.Entries)
+                    {
+                        var cache = new CachedConfigEntry(pref, content);
+                        cache.Enable();
+
+                        var obj = cache.m_UIroot;
+
+                        info.Prefs.Add(new EntryInfo()
+                        {
+                            RefEntry = pref,
+                            content = obj
+                        });
+
+                        if (pref.IsHidden)
+                            obj.SetActive(false);
+                    }
+
+                    content.SetActive(false);
+
+                    info.contentObj = content;
+
+                    _categoryInfos.Add(ctg.Identifier, info);
+                }
+                catch (Exception ex)
+                {
+                    PrefManagerMod.LogWarning($"Exception setting up category '{ctg.DisplayName}'!\r\n{ex}");
+                }
+            }
+        }
 
         public static void SetHiddenConfigVisibility(bool show)
         {
@@ -260,85 +340,14 @@ namespace MelonPrefManager.UI
         {
             var horiGroup = UIFactory.CreateHorizontalGroup(mainContent, "Main", true, true, true, true, 2, default, new Color(0.08f, 0.08f, 0.08f));
 
-            var ctgList = UIFactory.CreateScrollView(horiGroup, "CategoryList", out GameObject ctgViewport, out _, new Color(0.1f, 0.1f, 0.1f));
+            var ctgList = UIFactory.CreateAutoScrollView(horiGroup, "CategoryList", out GameObject ctgContent, out _, new Color(0.1f, 0.1f, 0.1f));
             UIFactory.SetLayoutElement(ctgList, minWidth: 300, flexibleWidth: 0);
-            CategoryListViewport = ctgViewport;
+            CategoryListContent = ctgContent;
+            UIFactory.SetLayoutGroup<VerticalLayoutGroup>(ctgContent, spacing: 3);
 
-            var editor = UIFactory.CreateScrollView(horiGroup, "ConfigEditor", out GameObject editorViewport, out _, new Color(0.05f, 0.05f, 0.05f));
+            var editor = UIFactory.CreateAutoScrollView(horiGroup, "ConfigEditor", out GameObject editorContent, out _, new Color(0.05f, 0.05f, 0.05f));
             UIFactory.SetLayoutElement(editor, flexibleWidth: 9999);
-            ConfigEditorViewport = editorViewport;
-        }
-
-        // wait for end of chainloader setup. mods that set up preferences after this aren't compatible atm.
-        private static IEnumerator SetupCategories()
-        {
-            yield return null;
-
-            foreach (var ctg in MelonPreferences.Categories.OrderBy(it => it.DisplayName))
-            {
-                if (_categoryInfos.ContainsKey(ctg.Identifier))
-                    continue;
-
-                try
-                {
-                    var info = new CategoryInfo()
-                    {
-                        RefCategory = ctg,
-                    };
-
-                    // List button
-
-                    var btn = UIFactory.CreateButton(CategoryListViewport,
-                        "BUTTON_" + ctg.Identifier,
-                        ctg.DisplayName,
-                        () => { SetActiveCategory(ctg.Identifier); });
-                    UIFactory.SetLayoutElement(btn.gameObject, flexibleWidth: 9999, minHeight: 30, flexibleHeight: 0);
-                    RuntimeProvider.Instance.SetColorBlock(btn, _normalDisabledColor, new Color(0.7f, 1f, 0.7f),
-                        new Color(0, 0.25f, 0));
-
-                    info.listButton = btn;
-
-                    // hide buttons for completely-hidden categories.
-                    if (!ctg.Entries.Any(it => !it.IsHidden))
-                    {
-                        btn.gameObject.SetActive(false);
-                        info.isCompletelyHidden = true;
-                    }
-
-                    // Editor content
-
-                    var content = UIFactory.CreateVerticalGroup(ConfigEditorViewport, "CATEGORY_" + ctg.Identifier, true, false, true, true, 4,
-                        default, new Color(0.05f, 0.05f, 0.05f));
-
-                    // Actual config entry editors
-                    foreach (var pref in ctg.Entries)
-                    {
-                        var cache = new CachedConfigEntry(pref, content);
-                        cache.Enable();
-
-                        var obj = cache.m_UIroot;
-
-                        info.Prefs.Add(new EntryInfo()
-                        {
-                            RefEntry = pref,
-                            content = obj
-                        });
-
-                        if (pref.IsHidden)
-                            obj.SetActive(false);
-                    }
-
-                    content.SetActive(false);
-
-                    info.contentObj = content;
-
-                    _categoryInfos.Add(ctg.Identifier, info);
-                }
-                catch (Exception ex)
-                {
-                    PrefManagerMod.LogWarning($"Exception setting up category '{ctg.DisplayName}'!\r\n{ex}");
-                }
-            }
+            ConfigEditorContent = editorContent;
         }
 
         #endregion

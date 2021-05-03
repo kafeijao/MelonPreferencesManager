@@ -1,7 +1,4 @@
 ﻿using MelonLoader;
-using MelonLoader.Tomlyn;
-using MelonLoader.Tomlyn.Model;
-using MelonLoader.Tomlyn.Syntax;
 using MelonPrefManager.UI.Utility;
 using System;
 using System.Collections.Generic;
@@ -10,20 +7,41 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using MelonLoader.Preferences;
 
 namespace MelonPrefManager.UI.InteractiveValues
 {
     public class InteractiveTomlObject : InteractiveValue
     {
+        static InteractiveTomlObject()
+        {
+            var t_TomlMain = ReflectionUtility.GetTypeByName("Tomlet.TomletMain");
+            var t_TomlValue = ReflectionUtility.GetTypeByName("Tomlet.Models.TomlValue");
+
+            _toTomlValue = t_TomlMain.GetMethod("ValueFrom", new Type[] { typeof(Type), typeof(object) });
+            _fromTomlValue = t_TomlMain.GetMethod("To", new Type[] { typeof(Type), t_TomlValue });
+
+            _serializedValueProperty = t_TomlValue.GetProperty("SerializedValue");
+
+            var t_TomlTable = ReflectionUtility.GetTypeByName("Tomlet.Models.TomlTable");
+            _serializeTableMethod = t_TomlTable.GetMethod("SerializeNonInlineTable");
+
+            var t_TomlArray = ReflectionUtility.GetTypeByName("Tomlet.Models.TomlArray");
+            _serializeArrayMethod = t_TomlArray.GetMethod("SerializeTableArray");
+        }
+
+        private static readonly MethodInfo _toTomlValue;
+        private static readonly MethodInfo _fromTomlValue;
+        private static readonly PropertyInfo _serializedValueProperty;
+        private static readonly MethodInfo _serializeTableMethod;
+        private static readonly MethodInfo _serializeArrayMethod;
+
         public InteractiveTomlObject(object value, Type valueType) : base(value, valueType) { }
 
         // Default handler for any type without a specific handler.
         public override bool SupportsType(Type type) => true;
 
-        public TomlObject RefTomlObject;
-        public DocumentSyntax tomlDoc;
-        private MethodInfo _toTomlMethod;
-        private MethodInfo _fromTomlMethod;
+        public object TomlValue;
         
         internal InputField m_valueInput;
         internal GameObject m_hiddenObj;
@@ -35,22 +53,35 @@ namespace MelonPrefManager.UI.InteractiveValues
 
             try
             {
-                if (_toTomlMethod == null)
+                TomlValue = _toTomlValue.Invoke(null, new object[] { Value.GetActualType(), Value });
+
+                string serialized;
+                try 
                 {
-                    var type = Value.GetActualType();
-                    _toTomlMethod = typeof(TomlMapper).GetMethod("ToToml").MakeGenericMethod(type);
+                    serialized = (string)_serializedValueProperty.GetValue(TomlValue, null); 
+                    m_valueInput.text = serialized;
+                    m_placeholderText.text = m_valueInput.text;
+                } 
+                catch 
+                {
+                    PrefManagerMod.Log("Trying to save TomlObject...");
+
+                    var tomlType = TomlValue.GetType();
+                    if (tomlType.Name == "TomlArray")
+                        serialized = (string)_serializeArrayMethod.Invoke(TomlValue, new object[] { Owner.RefConfig.DisplayName });
+                    else 
+                        serialized = (string)_serializeTableMethod.Invoke(TomlValue, new object[] { null, false });
+
+                    m_valueInput.text = serialized;
+                    PrefManagerMod.Log("Done");
                 }
 
-                RefTomlObject = _toTomlMethod.Invoke(MelonPreferences.Mapper, new object[] { Value }) as TomlObject;
-
-                var valueSyntax = CreateValueSyntax(RefTomlObject);
-
-                m_valueInput.text = valueSyntax.ToString();
-                m_placeholderText.text = m_valueInput.text;
+                
             }
-            catch
+            catch (Exception ex)
             {
-                PrefManagerMod.LogWarning($"Unable to edit config '{Owner.RefConfig.DisplayName}' due to an error with the Mapper!");
+                PrefManagerMod.LogWarning($"Unable to edit config '{Owner.RefConfig.DisplayName}' due to an error with the Mapper!" +
+                    $"\r\n{ex}");
             }
         }
 
@@ -58,33 +89,8 @@ namespace MelonPrefManager.UI.InteractiveValues
         {
             try
             {
-                string docTxt = $"[null]\r\nvalue = {m_valueInput.text}";
 
-                var tomlDoc = Toml.Parse(docTxt).ToModel();
-
-                foreach (KeyValuePair<string, object> keypair in tomlDoc)
-                {
-                    string category = keypair.Key;
-                    if (string.IsNullOrEmpty(category))
-                        continue;
-                    TomlTable tbl = (TomlTable)keypair.Value;
-                    if (tbl.Count <= 0)
-                        continue;
-                    foreach (KeyValuePair<string, object> tblkeypair in tbl)
-                    {
-                        var value = tblkeypair.Value as TomlObject;
-
-                        if (_fromTomlMethod == null)
-                        {
-                            var type = Value.GetActualType();
-                            _fromTomlMethod = typeof(TomlMapper).GetMethod("FromToml").MakeGenericMethod(type);
-                        }
-
-                        Value = _fromTomlMethod.Invoke(MelonPreferences.Mapper, new object[] { value });
-
-                        break;
-                    }
-                }
+                Value = _fromTomlValue.Invoke(null, new object[] { Value.GetActualType(), TomlValue });
 
                 Owner.SetValueFromIValue();
 
@@ -139,40 +145,40 @@ namespace MelonPrefManager.UI.InteractiveValues
             });
         }
 
-        // Borrowed from MelonPreferences/API.cs
-
-        private static ValueSyntax CreateValueSyntax(TomlObject obj)
-        {
-            return obj.Kind switch
-            {
-                ObjectKind.Boolean => new BooleanValueSyntax(((TomlBoolean)obj).Value),
-                ObjectKind.String => new StringValueSyntax(((TomlString)obj).Value),
-                ObjectKind.Float => new FloatValueSyntax(((TomlFloat)obj).Value),
-                ObjectKind.Integer => new IntegerValueSyntax(((TomlInteger)obj).Value),
-                ObjectKind.Array => CreateArraySyntaxFromTomlArray((TomlArray)obj),
-                _ => null
-            };
-        }
-
-        private static ArraySyntax CreateArraySyntaxFromTomlArray(TomlArray arr)
-        {
-            var newSyntax = new ArraySyntax
-            {
-                OpenBracket = SyntaxFactory.Token(TokenKind.OpenBracket),
-                CloseBracket = SyntaxFactory.Token(TokenKind.CloseBracket)
-            };
-            for (var i = 0; i < arr.Count; i++)
-            {
-                var item = new ArrayItemSyntax { Value = CreateValueSyntax(arr.GetTomlObject(i)) };
-                if (i + 1 < arr.Count)
-                {
-                    item.Comma = SyntaxFactory.Token(TokenKind.Comma);
-                    item.Comma.AddTrailingWhitespace();
-                }
-                newSyntax.Items.Add(item);
-            }
-
-            return newSyntax;
-        }
+        //// Borrowed from MelonPreferences/API.cs
+        //
+        //private static ValueSyntax CreateValueSyntax(TomlObject obj)
+        //{
+        //    return obj.Kind switch
+        //    {
+        //        ObjectKind.Boolean => new BooleanValueSyntax(((TomlBoolean)obj).Value),
+        //        ObjectKind.String => new StringValueSyntax(((TomlString)obj).Value),
+        //        ObjectKind.Float => new FloatValueSyntax(((TomlFloat)obj).Value),
+        //        ObjectKind.Integer => new IntegerValueSyntax(((TomlInteger)obj).Value),
+        //        ObjectKind.Array => CreateArraySyntaxFromTomlArray((TomlArray)obj),
+        //        _ => null
+        //    };
+        //}
+        //
+        //private static ArraySyntax CreateArraySyntaxFromTomlArray(TomlArray arr)
+        //{
+        //    var newSyntax = new ArraySyntax
+        //    {
+        //        OpenBracket = SyntaxFactory.Token(TokenKind.OpenBracket),
+        //        CloseBracket = SyntaxFactory.Token(TokenKind.CloseBracket)
+        //    };
+        //    for (var i = 0; i < arr.Count; i++)
+        //    {
+        //        var item = new ArrayItemSyntax { Value = CreateValueSyntax(arr.GetTomlObject(i)) };
+        //        if (i + 1 < arr.Count)
+        //        {
+        //            item.Comma = SyntaxFactory.Token(TokenKind.Comma);
+        //            item.Comma.AddTrailingWhitespace();
+        //        }
+        //        newSyntax.Items.Add(item);
+        //    }
+        //
+        //    return newSyntax;
+        //}
     }
 }

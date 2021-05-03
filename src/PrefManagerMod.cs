@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Text;
 using MelonLoader;
 using MelonLoader.Preferences;
-using MelonLoader.Tomlyn.Model;
 using MelonPrefManager;
 using MelonPrefManager.Input;
 using MelonPrefManager.Runtime;
@@ -22,7 +21,7 @@ namespace MelonPrefManager
     {
         public const string NAME = "MelonPreferencesManager";
         public const string AUTHOR = "Sinai";
-        public const string VERSION = "0.5.0";
+        public const string VERSION = "0.6.0";
 
         public static PrefManagerMod Instance { get; private set; }
 
@@ -67,61 +66,35 @@ namespace MelonPrefManager
 
             Main_Menu_Toggle = INTERNAL_CATEGORY.CreateEntry("Main Menu Toggle Key", KeyCode.F5);
 
-            // InitTest();
+            //InitTest();
         }
 
         ////  ~~~~~~~~~~~~~~~~ TEST CONFIG ~~~~~~~~~~~~~~~~
-
+        //
         //static void InitTest()
         //{
-        //    MelonPreferences.Mapper.RegisterMapper(TestReader, TestWriter);
-
+        //    //MelonPreferences.Mapper.
+        //
         //    var testCtg = MelonPreferences.CreateCategory("TestConfig");
-
-        //    testCtg.CreateEntry("This is an entry name", true, description: "Descriptions with new\r\nlines are supported");
-        //    testCtg.CreateEntry("A Byte value", (byte)1, description: "What happens if an invalid value is entered?");
-        //    testCtg.CreateEntry("Int slider", 32, description: "You can use sliders for any number type", validator: new ValueRange<int>(0, 100));
-        //    testCtg.CreateEntry("Float slider", 666f, description: "This setting has a ValueRange of 0 to 1000", validator: new ValueRange<float>(0, 1000f));
-        //    testCtg.CreateEntry("Key binding", KeyCode.Dollar, description: "KeyCodes have a special rebind helper");
-        //    testCtg.CreateEntry("Enum example", CameraClearFlags.Color, description: "Enums use a dropdown");
-        //    testCtg.CreateEntry("Multiline Input", (string)null, description: "Strings use a multi-line input field");
-        //    testCtg.CreateEntry("My favourite color", new Color32(20, 40, 60, 255), description: "Colors have a special color picker");
-        //    testCtg.CreateEntry("Float structs", Vector3.down, description: "Vector/Quaternion/etc use an editor like this");
-        //    testCtg.CreateEntry("Flag toggles", BindingFlags.Public, description: "Enums with [Flags] attribute use a multi-toggle");
-        //    testCtg.CreateEntry("Arrays", new[] { 0f, 1f }, description: "Arrays and other types will use the default Toml input");
-        //    testCtg.CreateEntry("TestCustom", new TestConfigClass() { myString = "helloworld", myInt = 69 }, null, "Testing a custom type");
+        //
+        //    //testCtg.CreateEntry("This is an entry name", true, description: "Descriptions with new\r\nlines are supported");
+        //    //testCtg.CreateEntry("A Byte value", (byte)1, description: "What happens if an invalid value is entered?");
+        //    //testCtg.CreateEntry("Int slider", 32, description: "You can use sliders for any number type", validator: new ValueRange<int>(0, 100));
+        //    //testCtg.CreateEntry("Float slider", 666f, description: "This setting has a ValueRange of 0 to 1000", validator: new ValueRange<float>(0, 1000f));
+        //    //testCtg.CreateEntry("Key binding", KeyCode.Dollar, description: "KeyCodes have a special rebind helper");
+        //    //testCtg.CreateEntry("Enum example", CameraClearFlags.Color, description: "Enums use a dropdown");
+        //    //testCtg.CreateEntry("Multiline Input", (string)null, description: "Strings use a multi-line input field");
+        //    //testCtg.CreateEntry("My favourite color", new Color32(20, 40, 60, 255), description: "Colors have a special color picker");
+        //    //testCtg.CreateEntry("Float structs", Vector3.down, description: "Vector/Quaternion/etc use an editor like this");
+        //    //testCtg.CreateEntry("Flag toggles", BindingFlags.Public, description: "Enums with [Flags] attribute use a multi-toggle");
+        //    //testCtg.CreateEntry("Arrays", new[] { 0f, 1f }, description: "Arrays and other types will use the default Toml input");
+        //    //testCtg.CreateEntry("TestCustom", new TestConfigClass() { myString = "helloworld", myInt = 69 }, null, "Testing a custom type");
         //}
-
+        //
         //public class TestConfigClass
         //{
         //    public string myString = "";
         //    public int myInt;
-        //}
-
-        //public static TomlObject TestWriter(TestConfigClass testConfig)
-        //{
-        //    if (testConfig == null)
-        //        return null;
-
-        //    string[] arr = new[] { testConfig.myString, testConfig.myInt.ToString() };
-        //    return MelonPreferences.Mapper.WriteArray(arr);
-        //}
-
-        //public static TestConfigClass TestReader(TomlObject value)
-        //{
-        //    try
-        //    {
-        //        string[] arr = MelonPreferences.Mapper.ReadArray<string>(value as TomlArray);
-        //        return new TestConfigClass
-        //        {
-        //            myString = arr[0],
-        //            myInt = int.Parse(arr[1]),
-        //        };
-        //    }
-        //    catch
-        //    {
-        //        return default;
-        //    }
         //}
 
         ////  ~~~~~~~~~~~~~~~~ END TEST CONFIG ~~~~~~~~~~~~~~~~

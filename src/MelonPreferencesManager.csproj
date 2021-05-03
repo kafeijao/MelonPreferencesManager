@@ -36,12 +36,24 @@
       <HintPath>..\lib\MelonLoader.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Core">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Data">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <!-- Mono refs -->
   <ItemGroup Condition="'$(IsCpp)'=='false'">
@@ -124,7 +136,6 @@
     <Compile Include="UI\PreferencesEditor.cs" />
     <Compile Include="UI\UIFactory.cs" />
     <Compile Include="UI\UIManager.cs" />
-    <Compile Include="UI\Utility\PageHandler.cs" />
     <Compile Include="UI\Utility\SignatureHighlighter.cs" />
     <Compile Include="UI\Utility\SliderScrollbar.cs" />
     <Compile Include="Utility\UnityHelpers.cs" />
@@ -133,6 +144,7 @@
     <EmbeddedResource Include="Resources\mpmUI.modern.bundle" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Resources\mpmUI.legacy.bundle" />
     <None Include="Resources\mpmUI.modern.bundle" />
   </ItemGroup>

@@ -154,7 +154,7 @@ namespace MelonPrefManager.Input
             try
             {
                 var prop = type.GetProperty(property);
-                PrefManagerMod.Instance.Harmony.Patch(prop.GetSetMethod(), prefix: prefix);
+                PrefManagerMod.Instance.HarmonyInstance.Patch(prop.GetSetMethod(), prefix: prefix);
             }
             catch //(Exception e)
             {

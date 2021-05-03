@@ -42,15 +42,18 @@ namespace MelonPrefManager.UI.InteractiveValues
             {
                 Value = ParseMethod.Invoke(null, new object[] { m_valueInput.text });
 
-                if (Owner.RefConfig.Validator?.IsValid(Value) ?? false)
-                    throw new Exception();
+                if (Owner.RefConfig.Validator != null && !Owner.RefConfig.Validator.IsValid(Value))
+                {
+                    m_valueInput.textComponent.color = Color.red;
+                    return;
+                }
 
                 Owner.SetValueFromIValue();
                 RefreshUIForValue();
 
                 m_valueInput.textComponent.color = Color.white;
             }
-            catch 
+            catch
             {
                 m_valueInput.textComponent.color = Color.red;
             }

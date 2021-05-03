@@ -140,14 +140,16 @@ namespace MelonPrefManager.UI
         {
             UIConstructed = true;
 
-            m_UIroot = UIFactory.CreateVerticalGroup(m_parentContent, "CacheObjectBase.MainContent", true, false, true, true, 0, 
+            m_UIroot = UIFactory.CreateVerticalGroup(m_parentContent, "ConfigEntry_" + this.RefConfig.Identifier, true, false, true, true, 0, 
                 default, new Color(1,1,1,0));
             ContentRect = m_UIroot.GetComponent<RectTransform>();
             ContentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 25);
-            UIFactory.SetLayoutElement(m_UIroot, minHeight: 25, flexibleHeight: 9999, minWidth: 200, flexibleWidth: 5000);
+            UIFactory.SetLayoutElement(m_UIroot, minHeight: 25, flexibleHeight: 9999, minWidth: 100, flexibleWidth: 5000);
+            //m_UIroot.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            ContentGroup = UIFactory.CreateVerticalGroup(m_UIroot, "ConfigHolder", true, false, true, true, 5, new Vector4(2, 2, 5, 5),
+            ContentGroup = UIFactory.CreateVerticalGroup(m_UIroot, "ConfigHolder", false, false, true, true, 5, new Vector4(2, 2, 5, 5),
                 new Color(0.12f, 0.12f, 0.12f));
+            //ContentGroup.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             var horiGroup = UIFactory.CreateHorizontalGroup(ContentGroup, "ConfigEntryHolder", false, false, true, true,
                 5, default, new Color(1, 1, 1, 0), TextAnchor.MiddleLeft);
