@@ -29,7 +29,7 @@ The UI supports the following types by default:
 * Multi-toggle: `enum` with `[Flags]` attribute
 * Color picker: `UnityEngine.Color` or `UnityEngine.Color32`
 * Struct editor: `UnityEngine.Vector3`, `UnityEngine.Quaternion`, etc
-* Toml input: Arrays and anything with a corresponding Mapper registered to `MelonPreferences.Mapper`.
+* Toml input: Anything else as long as Tomlet can serialize it.
 
 To make a slider, use a number type and provide a `ValueRange` for the Validator when creating the entry. For example:
 * `myCategory.CreateEntry("SomeFloat", 0f, validator: new ValueRange<float>(-1f, 1f));`
