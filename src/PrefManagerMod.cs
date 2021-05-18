@@ -21,7 +21,7 @@ namespace MelonPrefManager
     {
         public const string NAME = "MelonPreferencesManager";
         public const string AUTHOR = "Sinai";
-        public const string VERSION = "0.6.0";
+        public const string VERSION = "0.7.0";
 
         public static PrefManagerMod Instance { get; private set; }
 
