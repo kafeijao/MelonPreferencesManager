@@ -156,9 +156,10 @@ namespace MelonPrefManager.Input
                 var prop = type.GetProperty(property);
                 PrefManagerMod.Instance.HarmonyInstance.Patch(prop.GetSetMethod(), prefix: prefix);
             }
-            catch //(Exception e)
+            catch (Exception e)
             {
-                //MPM.Log($"Unable to patch {type.Name}.set_{property}: {e.Message}");
+                PrefManagerMod.Log($"Unable to patch {type.Name}.set_{property}!");
+                PrefManagerMod.Log(e.ToString());
             }
         }
 
