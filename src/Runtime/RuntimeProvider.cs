@@ -14,7 +14,7 @@ namespace MelonPrefManager.Runtime
         public static RuntimeProvider Instance;
 
         public ReflectionProvider Reflection;
-        public TextureUtilProvider TextureUtil;
+        //public TextureUtilProvider TextureUtil;
 
         public RuntimeProvider()
         {
