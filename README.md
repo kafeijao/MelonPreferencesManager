@@ -2,7 +2,7 @@
 
 In-game UI for managing MelonLoader Mod Preferences. Supports IL2CPP and Mono Unity games.
 
-Requires MelonLoader v0.3.1.
+Requires MelonLoader v0.4+
 
 ## Releases [![](https://img.shields.io/github/release/sinai-dev/MelonPreferencesManager.svg?label=release%20notes)](../../releases/latest)
 
