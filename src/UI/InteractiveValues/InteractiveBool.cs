@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using MelonPrefManager.UI;
+using UniverseLib.UI;
 
 namespace MelonPrefManager.UI.InteractiveValues
 {

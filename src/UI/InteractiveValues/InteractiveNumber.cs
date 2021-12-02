@@ -6,15 +6,15 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 using MelonPrefManager.UI;
-using MelonPrefManager.UI.Utility;
 using MelonLoader;
 using MelonLoader.Preferences;
+using UniverseLib.UI;
 
 namespace MelonPrefManager.UI.InteractiveValues
 {
     public class InteractiveNumber : InteractiveValue
     {
-        internal InputField m_valueInput;
+        internal InputFieldRef m_valueInput;
 
         public MethodInfo ParseMethod => m_parseMethod ??= Value.GetType().GetMethod("Parse", new Type[] { typeof(string) });
         private MethodInfo m_parseMethod;
@@ -27,10 +27,10 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         public override void RefreshUIForValue()
         {
-            m_valueInput.text = Value.ToString();
+            m_valueInput.Text = Value.ToString();
 
-            if (!m_valueInput.gameObject.activeSelf)
-                m_valueInput.gameObject.SetActive(true);
+            if (!m_valueInput.Component.gameObject.activeSelf)
+                m_valueInput.Component.gameObject.SetActive(true);
 
             if (m_slider)
                 m_slider.value = (float)Convert.ChangeType(Value, typeof(float));
@@ -40,22 +40,22 @@ namespace MelonPrefManager.UI.InteractiveValues
         {
             try
             {
-                Value = ParseMethod.Invoke(null, new object[] { m_valueInput.text });
+                Value = ParseMethod.Invoke(null, new object[] { m_valueInput.Text });
 
                 if (Owner.RefConfig.Validator != null && !Owner.RefConfig.Validator.IsValid(Value))
                 {
-                    m_valueInput.textComponent.color = Color.red;
+                    m_valueInput.Component.textComponent.color = Color.red;
                     return;
                 }
 
                 Owner.SetValueFromIValue();
                 RefreshUIForValue();
 
-                m_valueInput.textComponent.color = Color.white;
+                m_valueInput.Component.textComponent.color = Color.white;
             }
             catch
             {
-                m_valueInput.textComponent.color = Color.red;
+                m_valueInput.Component.textComponent.color = Color.red;
             }
         }
 
@@ -63,16 +63,15 @@ namespace MelonPrefManager.UI.InteractiveValues
         {
             base.ConstructUI(parent);
 
-            var inputObj = UIFactory.CreateInputField(m_mainContent, "InteractiveNumberInput", "...");
-            UIFactory.SetLayoutElement(inputObj, minWidth: 120, minHeight: 25, flexibleWidth: 0);
+            m_valueInput = UIFactory.CreateInputField(m_mainContent, "InteractiveNumberInput", "...");
+            UIFactory.SetLayoutElement(m_valueInput.Component.gameObject, minWidth: 120, minHeight: 25, flexibleWidth: 0);
 
-            m_valueInput = inputObj.GetComponent<InputField>();
-            m_valueInput.gameObject.SetActive(false);
+            m_valueInput.Component.gameObject.SetActive(false);
 
-            m_valueInput.onValueChanged.AddListener((string val) =>
+            m_valueInput.OnValueChanged += (string val) =>
             {
                 SetValueFromInput();
-            });
+            };
 
             //var type = Value.GetType();
             //if (type == typeof(float) || type == typeof(double) || type == typeof(decimal))
@@ -96,7 +95,7 @@ namespace MelonPrefManager.UI.InteractiveValues
                 {
                     Value = Convert.ChangeType(val, FallbackType);
                     Owner.SetValueFromIValue();
-                    m_valueInput.text = Value.ToString();
+                    m_valueInput.Text = Value.ToString();
                 });
 
                 //m_valueInput.onValueChanged.AddListener((string val) => 

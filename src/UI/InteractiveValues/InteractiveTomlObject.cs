@@ -1,5 +1,4 @@
 ﻿using MelonLoader;
-using MelonPrefManager.UI.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +7,8 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using MelonLoader.Preferences;
+using UniverseLib;
+using UniverseLib.UI;
 
 namespace MelonPrefManager.UI.InteractiveValues
 {
@@ -43,7 +44,7 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         public object TomlValue;
         
-        internal InputField m_valueInput;
+        internal InputFieldRef m_valueInput;
         internal GameObject m_hiddenObj;
         internal Text m_placeholderText;
 
@@ -59,8 +60,8 @@ namespace MelonPrefManager.UI.InteractiveValues
                 try 
                 {
                     serialized = (string)_serializedValueProperty.GetValue(TomlValue, null); 
-                    m_valueInput.text = serialized;
-                    m_placeholderText.text = m_valueInput.text;
+                    m_valueInput.Text = serialized;
+                    m_placeholderText.text = m_valueInput.Text;
                 } 
                 catch 
                 {
@@ -72,7 +73,7 @@ namespace MelonPrefManager.UI.InteractiveValues
                     else 
                         serialized = (string)_serializeTableMethod.Invoke(TomlValue, new object[] { null, false });
 
-                    m_valueInput.text = serialized;
+                    m_valueInput.Text = serialized;
                     PrefManagerMod.Log("Done");
                 }
 
@@ -94,11 +95,11 @@ namespace MelonPrefManager.UI.InteractiveValues
 
                 Owner.SetValueFromIValue();
 
-                m_valueInput.textComponent.color = Color.white;
+                m_valueInput.Component.textComponent.color = Color.white;
             }
             catch
             {
-                m_valueInput.textComponent.color = Color.red;
+                m_valueInput.Component.textComponent.color = Color.red;
             }
         }
 
@@ -124,25 +125,24 @@ namespace MelonPrefManager.UI.InteractiveValues
             UIFactory.SetLayoutElement(m_hiddenObj, minHeight: 25, flexibleHeight: 500, minWidth: 250, flexibleWidth: 9000);
             UIFactory.SetLayoutGroup<HorizontalLayoutGroup>(m_hiddenObj, true, true, true, true);
 
-            var inputObj = UIFactory.CreateInputField(m_hiddenObj, "StringInputField", "...", 14, 3);
-            UIFactory.SetLayoutElement(inputObj, minWidth: 120, minHeight: 25, flexibleWidth: 5000, flexibleHeight: 5000);
+            m_valueInput = UIFactory.CreateInputField(m_hiddenObj, "StringInputField", "...");
+            UIFactory.SetLayoutElement(m_valueInput.Component.gameObject, minWidth: 120, minHeight: 25, flexibleWidth: 5000, flexibleHeight: 5000);
 
-            m_valueInput = inputObj.GetComponent<InputField>();
-            m_valueInput.lineType = InputField.LineType.MultiLineNewline;
+            m_valueInput.Component.lineType = InputField.LineType.MultiLineNewline;
 
-            m_placeholderText = m_valueInput.placeholder.GetComponent<Text>();
+            m_placeholderText = m_valueInput.Component.placeholder.GetComponent<Text>();
 
             m_placeholderText.supportRichText = false;
-            m_valueInput.textComponent.supportRichText = false;
+            m_valueInput.Component.textComponent.supportRichText = false;
 
             OnValueUpdated();
 
-            m_valueInput.onValueChanged.AddListener((string val) =>
+            m_valueInput.OnValueChanged += (string val) =>
             {
                 hiddenText.text = val ?? "";
                 LayoutRebuilder.ForceRebuildLayoutImmediate(Owner.ContentRect);
                 SetValueFromInput();
-            });
+            };
         }
 
         //// Borrowed from MelonPreferences/API.cs

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using UniverseLib.UI;
 
 namespace MelonPrefManager.UI.InteractiveValues
 {
@@ -96,10 +97,10 @@ namespace MelonPrefManager.UI.InteractiveValues
             var label = UIFactory.CreateLabel(row, "RowLabel", $"{s_fieldNames[index]}:", TextAnchor.MiddleRight, Color.cyan);
             UIFactory.SetLayoutElement(label.gameObject, minWidth: 17, flexibleWidth: 0, minHeight: 25);
 
-            var inputFieldObj = UIFactory.CreateInputField(row, "InputField", "...", 14, 3, 1);
-            UIFactory.SetLayoutElement(inputFieldObj, minWidth: 40, minHeight: 25, flexibleWidth: 0);
+            var inputFieldObj = UIFactory.CreateInputField(row, "InputField", "...");
+            UIFactory.SetLayoutElement(inputFieldObj.Component.gameObject, minWidth: 40, minHeight: 25, flexibleWidth: 0);
 
-            var inputField = inputFieldObj.GetComponent<InputField>();
+            var inputField = inputFieldObj.Component;
             m_inputs[index] = inputField;
             inputField.characterValidation = Value is Color
                                              ? InputField.CharacterValidation.Decimal

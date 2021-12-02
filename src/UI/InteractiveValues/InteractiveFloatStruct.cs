@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using MelonPrefManager.UI;
 using System.Reflection;
+using UniverseLib.UI;
 
 namespace MelonPrefManager.UI.InteractiveValues
 {
@@ -157,10 +158,10 @@ namespace MelonPrefManager.UI.InteractiveValues
                 var label = UIFactory.CreateLabel(row, "RowLabel", $"{name}:", TextAnchor.MiddleRight, Color.cyan);
                 UIFactory.SetLayoutElement(label.gameObject, minWidth: 30, flexibleWidth: 0, minHeight: 25);
 
-                var inputFieldObj = UIFactory.CreateInputField(row, "InputField", "...", 14, 3, 1);
-                UIFactory.SetLayoutElement(inputFieldObj, minWidth: 120, minHeight: 25, flexibleWidth: 0);
+                var inputFieldObj = UIFactory.CreateInputField(row, "InputField", "...");
+                UIFactory.SetLayoutElement(inputFieldObj.Component.gameObject, minWidth: 120, minHeight: 25, flexibleWidth: 0);
 
-                var inputField = inputFieldObj.GetComponent<InputField>();
+                var inputField = inputFieldObj.Component;
                 m_inputs[index] = inputField;
 
                 inputField.onValueChanged.AddListener((string val) =>

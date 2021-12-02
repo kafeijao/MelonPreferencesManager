@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using MelonLoader;
 using MelonPrefManager.UI.InteractiveValues;
-using MelonPrefManager.UI.Utility;
-using System.Reflection;
+using UniverseLib.UI;
+using UniverseLib;
 
 namespace MelonPrefManager.UI
 {
@@ -26,7 +23,7 @@ namespace MelonPrefManager.UI
         public Text m_mainLabel;
 
         internal GameObject m_UIroot;
-        internal GameObject m_undoButton;
+        internal ButtonRef m_undoButton;
 
         public Type FallbackType => RefConfig.GetReflectedType();
 
@@ -85,8 +82,8 @@ namespace MelonPrefManager.UI
                 return;
 
             RefConfig.BoxedEditedValue = IValue.Value;
-            PreferencesEditor.OnEntryEdit(this);
-            m_undoButton.SetActive(true);
+            UIManager.OnEntryEdit(this);
+            m_undoButton.Component.gameObject.SetActive(true);
         }
 
         public void UndoEdits()
@@ -108,8 +105,8 @@ namespace MelonPrefManager.UI
 
         internal void OnSaveOrUndo()
         {
-            m_undoButton.SetActive(false);
-            PreferencesEditor.OnEntryUndo(this);
+            m_undoButton.Component.gameObject.SetActive(false);
+            UIManager.OnEntryUndo(this);
         }
 
         public void Enable()
@@ -159,20 +156,21 @@ namespace MelonPrefManager.UI
 
             m_mainLabel = UIFactory.CreateLabel(horiGroup, "ConfigLabel", this.RefConfig.DisplayName, TextAnchor.MiddleLeft, 
                 new Color(0.7f, 1, 0.7f));
-            m_mainLabel.text += $" <i>({SignatureHighlighter.ParseFullSyntax(RefConfig.GetReflectedType(), false)})</i>";
+            m_mainLabel.text += $" <i>({SignatureHighlighter.Parse(RefConfig.GetReflectedType(), false)})</i>";
             UIFactory.SetLayoutElement(m_mainLabel.gameObject, minWidth: 200, minHeight: 22, flexibleWidth: 9999, flexibleHeight: 0);
 
             // Undo button
 
-            var undoButton = UIFactory.CreateButton(horiGroup, "UndoButton", "Undo", UndoEdits, new Color(0.3f, 0.3f, 0.3f));
-            m_undoButton = undoButton.gameObject;
-            m_undoButton.SetActive(false);
-            UIFactory.SetLayoutElement(m_undoButton, minWidth: 80, minHeight: 22, flexibleWidth: 0);
+            m_undoButton = UIFactory.CreateButton(horiGroup, "UndoButton", "Undo", new Color(0.3f, 0.3f, 0.3f));
+            m_undoButton.OnClick += UndoEdits;
+            m_undoButton.Component.gameObject.SetActive(false);
+            UIFactory.SetLayoutElement(m_undoButton.Component.gameObject, minWidth: 80, minHeight: 22, flexibleWidth: 0);
 
             // Default button
 
-            var defaultButton = UIFactory.CreateButton(horiGroup, "DefaultButton", "Default", RevertToDefault, new Color(0.3f, 0.3f, 0.3f));
-            UIFactory.SetLayoutElement(defaultButton.gameObject, minWidth: 80, minHeight: 22, flexibleWidth: 0);
+            var defaultButton = UIFactory.CreateButton(horiGroup, "DefaultButton", "Default", new Color(0.3f, 0.3f, 0.3f));
+            defaultButton.OnClick += RevertToDefault;
+            UIFactory.SetLayoutElement(defaultButton.Component.gameObject, minWidth: 80, minHeight: 22, flexibleWidth: 0);
 
             // Description label
 
