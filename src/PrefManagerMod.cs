@@ -12,7 +12,11 @@ using UnityEngine;
 using UniverseLib.Input;
 
 [assembly: MelonGame()]
-[assembly: MelonPlatformDomain(MelonPlatformDomainAttribute.CompatibleDomains.UNIVERSAL)]
+#if CPP
+[assembly: MelonPlatformDomain(MelonPlatformDomainAttribute.CompatibleDomains.IL2CPP)]
+#else
+[assembly: MelonPlatformDomain(MelonPlatformDomainAttribute.CompatibleDomains.MONO)]
+#endif
 [assembly: MelonInfo(typeof(PrefManagerMod), PrefManagerMod.NAME, PrefManagerMod.VERSION, PrefManagerMod.AUTHOR)]
 
 namespace MelonPrefManager
@@ -22,7 +26,7 @@ namespace MelonPrefManager
         public const string GUID = "com.sinai.MelonPreferencesManager";
         public const string NAME = "MelonPreferencesManager";
         public const string AUTHOR = "Sinai";
-        public const string VERSION = "1.0.0";
+        public const string VERSION = "1.0.1";
 
         public static PrefManagerMod Instance { get; private set; }
 
@@ -121,7 +125,7 @@ namespace MelonPrefManager
         //
         ////  ~~~~~~~~~~~~~~~~ END TEST CONFIG ~~~~~~~~~~~~~~~~
 
-        #region LOGGING HELPERS
+#region LOGGING HELPERS
 
         public static void Log(object message)
             => Log(message, LogType.Log);
@@ -151,6 +155,6 @@ namespace MelonPrefManager
             }
         }
 
-        #endregion
+#endregion
     }
 }
