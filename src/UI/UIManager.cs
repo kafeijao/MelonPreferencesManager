@@ -10,17 +10,18 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UniverseLib;
 using UniverseLib.UI;
+using UniverseLib.UI.Models;
 
 namespace MelonPrefManager.UI
 {
     public class UIManager
     {
         private static UIBase uiBase;
-        public static GameObject UIRoot => uiBase == null ? null : uiBase.RootObject;
+        public static GameObject UIRoot => uiBase?.RootObject;
 
         public static bool ShowMenu
         {
-            get => uiBase == null ? false : uiBase.Enabled;
+            get => uiBase != null && uiBase.Enabled;
             set
             {
                 if (uiBase == null || !UIRoot || uiBase.Enabled == value)
@@ -54,7 +55,7 @@ namespace MelonPrefManager.UI
         {
             public MelonPreferences_Category RefCategory;
 
-            internal List<EntryInfo> Prefs = new List<EntryInfo>();
+            internal List<EntryInfo> Prefs = new();
 
             internal bool isCompletelyHidden;
             internal ButtonRef listButton;
@@ -83,7 +84,7 @@ namespace MelonPrefManager.UI
         internal static string Filter => currentFilter ?? "";
         private static string currentFilter;
 
-        private static readonly HashSet<CachedConfigEntry> editingEntries = new HashSet<CachedConfigEntry>();
+        private static readonly HashSet<CachedConfigEntry> editingEntries = new();
         private static ButtonRef saveButton;
 
         public static void OnEntryEdit(CachedConfigEntry entry)
@@ -138,11 +139,11 @@ namespace MelonPrefManager.UI
             MelonCoroutines.Start(SetupCategories());
         }
 
-        private static readonly Dictionary<string, CategoryInfo> _categoryInfos = new Dictionary<string, CategoryInfo>();
+        private static readonly Dictionary<string, CategoryInfo> _categoryInfos = new();
         private static CategoryInfo _currentCategory;
 
-        private static Color _normalDisabledColor = new Color(0.17f, 0.25f, 0.17f);
-        private static Color _normalActiveColor = new Color(0, 0.45f, 0.05f);
+        private static Color _normalDisabledColor = new(0.17f, 0.25f, 0.17f);
+        private static Color _normalActiveColor = new(0, 0.45f, 0.05f);
 
         // wait for end of chainloader setup. mods that set up preferences after this aren't compatible atm.
         private static IEnumerator SetupCategories()
@@ -166,7 +167,7 @@ namespace MelonPrefManager.UI
                     var btn = UIFactory.CreateButton(CategoryListContent, "BUTTON_" + ctg.Identifier, ctg.DisplayName);
                     btn.OnClick += () => { SetActiveCategory(ctg.Identifier); };
                     UIFactory.SetLayoutElement(btn.Component.gameObject, flexibleWidth: 9999, minHeight: 30, flexibleHeight: 0);
-                    RuntimeProvider.Instance.SetColorBlock(btn.Component, _normalDisabledColor, new Color(0.7f, 1f, 0.7f),
+                    RuntimeHelper.SetColorBlock(btn.Component, _normalDisabledColor, new Color(0.7f, 1f, 0.7f),
                         new Color(0, 0.25f, 0));
 
                     info.listButton = btn;
@@ -189,7 +190,7 @@ namespace MelonPrefManager.UI
                         var cache = new CachedConfigEntry(pref, content);
                         cache.Enable();
 
-                        var obj = cache.m_UIroot;
+                        var obj = cache.UIroot;
 
                         info.Prefs.Add(new EntryInfo()
                         {
@@ -272,7 +273,7 @@ namespace MelonPrefManager.UI
             obj.SetActive(true);
 
             var btn = info.listButton;
-            RuntimeProvider.Instance.SetColorBlock(btn.Component, _normalActiveColor);
+            RuntimeHelper.SetColorBlock(btn.Component, _normalActiveColor);
 
             RefreshFilter();
         }
@@ -282,7 +283,7 @@ namespace MelonPrefManager.UI
             if (_currentCategory == null)
                 return;
 
-            RuntimeProvider.Instance.SetColorBlock(_currentCategory.listButton.Component, _normalDisabledColor);
+            RuntimeHelper.SetColorBlock(_currentCategory.listButton.Component, _normalDisabledColor);
             _currentCategory.contentObj.SetActive(false);
 
             _currentCategory = null;
@@ -292,21 +293,21 @@ namespace MelonPrefManager.UI
 
         private void ConstructMenu()
         {
-            MainPanel = UIFactory.CreatePanel("MainMenu", UIRoot, out GameObject mainContent);
-            UIFactory.SetLayoutGroup<VerticalLayoutGroup>(mainContent, true, false, true, true);
+            MainPanel = UIFactory.CreatePanel("MainMenu", UIRoot);
+            UIFactory.SetLayoutGroup<VerticalLayoutGroup>(MainPanel, true, false, true, true);
 
             var rect = MainPanel.GetComponent<RectTransform>();
             rect.anchorMin = new Vector2(0.2f, 0.02f);
             rect.anchorMax = new Vector2(0.8f, 0.98f);
             rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 1000);
 
-            ConstructTitleBar(mainContent);
+            ConstructTitleBar(MainPanel);
 
-            ConstructSaveButton(mainContent);
+            ConstructSaveButton(MainPanel);
 
-            ConstructToolbar(mainContent);
+            ConstructToolbar(MainPanel);
 
-            ConstructEditorViewport(mainContent);
+            ConstructEditorViewport(MainPanel);
         }
 
         private void ConstructTitleBar(GameObject content)
@@ -328,7 +329,7 @@ namespace MelonPrefManager.UI
             var hideButton = UIFactory.CreateButton(titleBar, "HideButton",  $"X");
             hideButton.OnClick += () => { ShowMenu = false; };
             UIFactory.SetLayoutElement(hideButton.Component.gameObject, minWidth: 25, flexibleWidth: 0);
-            RuntimeProvider.Instance.SetColorBlock(hideButton.Component, new Color(1, 0.2f, 0.2f),
+            RuntimeHelper.SetColorBlock(hideButton.Component, new Color(1, 0.2f, 0.2f),
                 new Color(1, 0.6f, 0.6f), new Color(0.3f, 0.1f, 0.1f));
 
             Text hideText = hideButton.ButtonText;
@@ -343,7 +344,7 @@ namespace MelonPrefManager.UI
             saveButton = UIFactory.CreateButton(mainContent, "SaveButton", "Save Preferences");
             saveButton.OnClick += SavePreferences;
             UIFactory.SetLayoutElement(saveButton.Component.gameObject, minHeight: 35, flexibleWidth: 9999);
-            RuntimeProvider.Instance.SetColorBlock(saveButton.Component, new Color(0.1f, 0.3f, 0.1f),
+            RuntimeHelper.SetColorBlock(saveButton.Component, new Color(0.1f, 0.3f, 0.1f),
                 new Color(0.2f, 0.5f, 0.2f), new Color(0.1f, 0.2f, 0.1f), new Color(0.2f, 0.2f, 0.2f));
 
             saveButton.Component.interactable = false;

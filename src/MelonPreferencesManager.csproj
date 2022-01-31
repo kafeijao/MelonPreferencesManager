@@ -11,7 +11,7 @@
     <AssemblyName>MelonPreferencesManager</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <!-- CONFIGURATIONS -->
@@ -69,14 +69,14 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="UniverseLib.Mono">
-      <HintPath>packages\UniverseLib.1.1.2\lib\net35\UniverseLib.Mono.dll</HintPath>
+      <HintPath>packages\UniverseLib.1.2.1\lib\net35\UniverseLib.Mono.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- Il2Cpp refs -->
   <ItemGroup Condition="'$(IsCpp)'=='true'">
-      <Reference Include="UniverseLib.IL2CPP">
-          <HintPath>packages\UniverseLib.1.1.2\lib\net472\UniverseLib.IL2CPP.dll</HintPath>
-      </Reference>
+    <Reference Include="UniverseLib.IL2CPP">
+      <HintPath>packages\UniverseLib.1.2.1\lib\net472\UniverseLib.IL2CPP.dll</HintPath>
+    </Reference>
     <Reference Include="UnhollowerBaseLib">
       <HintPath>..\lib\UnhollowerBaseLib.dll</HintPath>
       <Private>False</Private>
@@ -128,6 +128,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="packages\UniverseLib.Analyzers.1.0.3\analyzers\dotnet\cs\UniverseLib.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

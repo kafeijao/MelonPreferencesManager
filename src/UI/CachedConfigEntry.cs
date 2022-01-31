@@ -5,6 +5,8 @@ using MelonLoader;
 using MelonPrefManager.UI.InteractiveValues;
 using UniverseLib.UI;
 using UniverseLib;
+using UniverseLib.UI.Models;
+using UniverseLib.Utility;
 
 namespace MelonPrefManager.UI
 {
@@ -15,22 +17,22 @@ namespace MelonPrefManager.UI
 
         // UI
         public bool UIConstructed;
-        public GameObject m_parentContent;
+        public GameObject parentContent;
         public GameObject ContentGroup;
         public RectTransform ContentRect;
         public GameObject SubContentGroup;
 
-        public Text m_mainLabel;
+        public Text mainLabel;
 
-        internal GameObject m_UIroot;
-        internal ButtonRef m_undoButton;
+        internal GameObject UIroot;
+        internal ButtonRef undoButton;
 
         public Type FallbackType => RefConfig.GetReflectedType();
 
         public CachedConfigEntry(MelonPreferences_Entry config, GameObject parent)
         {
             RefConfig = config;
-            m_parentContent = parent;
+            parentContent = parent;
 
             EnsureConfigValid();
 
@@ -43,8 +45,8 @@ namespace MelonPrefManager.UI
         {
             IValue = InteractiveValue.Create(value, fallbackType);
             IValue.Owner = this;
-            IValue.m_mainContentParent = ContentGroup;
-            IValue.m_subContentParent = this.SubContentGroup;
+            IValue.mainContentParent = ContentGroup;
+            IValue.subContentParent = this.SubContentGroup;
         }
 
         private void EnsureConfigValid()
@@ -83,7 +85,7 @@ namespace MelonPrefManager.UI
 
             RefConfig.BoxedEditedValue = IValue.Value;
             UIManager.OnEntryEdit(this);
-            m_undoButton.Component.gameObject.SetActive(true);
+            undoButton.Component.gameObject.SetActive(true);
         }
 
         public void UndoEdits()
@@ -105,7 +107,7 @@ namespace MelonPrefManager.UI
 
         internal void OnSaveOrUndo()
         {
-            m_undoButton.Component.gameObject.SetActive(false);
+            undoButton.Component.gameObject.SetActive(false);
             UIManager.OnEntryUndo(this);
         }
 
@@ -117,34 +119,34 @@ namespace MelonPrefManager.UI
                 UpdateValue();
             }
 
-            m_UIroot.SetActive(true);
-            m_UIroot.transform.SetAsLastSibling();
+            UIroot.SetActive(true);
+            UIroot.transform.SetAsLastSibling();
         }
 
         public void Disable()
         {
-            if (m_UIroot)
-                m_UIroot.SetActive(false);
+            if (UIroot)
+                UIroot.SetActive(false);
         }
 
         public void Destroy()
         {
-            if (this.m_UIroot)
-                GameObject.Destroy(this.m_UIroot);
+            if (this.UIroot)
+                GameObject.Destroy(this.UIroot);
         }
 
         internal void ConstructUI()
         {
             UIConstructed = true;
 
-            m_UIroot = UIFactory.CreateVerticalGroup(m_parentContent, "ConfigEntry_" + this.RefConfig.Identifier, true, false, true, true, 0, 
+            UIroot = UIFactory.CreateVerticalGroup(parentContent, "ConfigEntry_" + this.RefConfig.Identifier, true, false, true, true, 0, 
                 default, new Color(1,1,1,0));
-            ContentRect = m_UIroot.GetComponent<RectTransform>();
+            ContentRect = UIroot.GetComponent<RectTransform>();
             ContentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 25);
-            UIFactory.SetLayoutElement(m_UIroot, minHeight: 25, flexibleHeight: 9999, minWidth: 100, flexibleWidth: 5000);
+            UIFactory.SetLayoutElement(UIroot, minHeight: 25, flexibleHeight: 9999, minWidth: 100, flexibleWidth: 5000);
             //m_UIroot.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            ContentGroup = UIFactory.CreateVerticalGroup(m_UIroot, "ConfigHolder", false, false, true, true, 5, new Vector4(2, 2, 5, 5),
+            ContentGroup = UIFactory.CreateVerticalGroup(UIroot, "ConfigHolder", false, false, true, true, 5, new Vector4(2, 2, 5, 5),
                 new Color(0.12f, 0.12f, 0.12f));
             //ContentGroup.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
@@ -154,17 +156,17 @@ namespace MelonPrefManager.UI
 
             // config entry label
 
-            m_mainLabel = UIFactory.CreateLabel(horiGroup, "ConfigLabel", this.RefConfig.DisplayName, TextAnchor.MiddleLeft, 
+            mainLabel = UIFactory.CreateLabel(horiGroup, "ConfigLabel", this.RefConfig.DisplayName, TextAnchor.MiddleLeft, 
                 new Color(0.7f, 1, 0.7f));
-            m_mainLabel.text += $" <i>({SignatureHighlighter.Parse(RefConfig.GetReflectedType(), false)})</i>";
-            UIFactory.SetLayoutElement(m_mainLabel.gameObject, minWidth: 200, minHeight: 22, flexibleWidth: 9999, flexibleHeight: 0);
+            mainLabel.text += $" <i>({SignatureHighlighter.Parse(RefConfig.GetReflectedType(), false)})</i>";
+            UIFactory.SetLayoutElement(mainLabel.gameObject, minWidth: 200, minHeight: 22, flexibleWidth: 9999, flexibleHeight: 0);
 
             // Undo button
 
-            m_undoButton = UIFactory.CreateButton(horiGroup, "UndoButton", "Undo", new Color(0.3f, 0.3f, 0.3f));
-            m_undoButton.OnClick += UndoEdits;
-            m_undoButton.Component.gameObject.SetActive(false);
-            UIFactory.SetLayoutElement(m_undoButton.Component.gameObject, minWidth: 80, minHeight: 22, flexibleWidth: 0);
+            undoButton = UIFactory.CreateButton(horiGroup, "UndoButton", "Undo", new Color(0.3f, 0.3f, 0.3f));
+            undoButton.OnClick += UndoEdits;
+            undoButton.Component.gameObject.SetActive(false);
+            UIFactory.SetLayoutElement(undoButton.Component.gameObject, minWidth: 80, minHeight: 22, flexibleWidth: 0);
 
             // Default button
 
@@ -192,8 +194,8 @@ namespace MelonPrefManager.UI
 
             if (IValue != null)
             {
-                IValue.m_mainContentParent = ContentGroup;
-                IValue.m_subContentParent = this.SubContentGroup;
+                IValue.mainContentParent = ContentGroup;
+                IValue.subContentParent = this.SubContentGroup;
             }
         }
     }

@@ -5,16 +5,17 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using UniverseLib.UI;
+using UniverseLib;
 
 namespace MelonPrefManager.UI.InteractiveValues
 {
     public class InteractiveColor : InteractiveValue
     {
-        private Image m_colorImage;
-        private readonly InputField[] m_inputs = new InputField[4];
-        private readonly Slider[] m_sliders = new Slider[4];
+        private Image colorImage;
+        private readonly InputField[] inputs = new InputField[4];
+        private readonly Slider[] sliders = new Slider[4];
 
-        private static readonly string[] s_fieldNames = new[] { "R", "G", "B", "A" };
+        private static readonly string[] fieldNames = new[] { "R", "G", "B", "A" };
 
         public InteractiveColor(object value, Type valueType) : base(value, valueType) { }
 
@@ -31,23 +32,23 @@ namespace MelonPrefManager.UI.InteractiveValues
         {
             if (this.Value is Color32 c32)
             {
-                m_inputs[0].text = c32.r.ToString();
-                m_inputs[1].text = c32.g.ToString();
-                m_inputs[2].text = c32.b.ToString();
-                m_inputs[3].text = c32.a.ToString();
+                inputs[0].text = c32.r.ToString();
+                inputs[1].text = c32.g.ToString();
+                inputs[2].text = c32.b.ToString();
+                inputs[3].text = c32.a.ToString();
 
-                if (m_colorImage)
-                    m_colorImage.color = c32;
+                if (colorImage)
+                    colorImage.color = c32;
             }
             else if (this.Value is Color color)
             {
-                m_inputs[0].text = color.r.ToString();
-                m_inputs[1].text = color.g.ToString();
-                m_inputs[2].text = color.b.ToString();
-                m_inputs[3].text = color.a.ToString();
+                inputs[0].text = color.r.ToString();
+                inputs[1].text = color.g.ToString();
+                inputs[2].text = color.b.ToString();
+                inputs[3].text = color.a.ToString();
 
-                if (m_colorImage)
-                    m_colorImage.color = color;
+                if (colorImage)
+                    colorImage.color = color;
             }
         }
 
@@ -64,7 +65,7 @@ namespace MelonPrefManager.UI.InteractiveValues
 
             // hori group
 
-            var baseHoriGroup = UIFactory.CreateHorizontalGroup(m_mainContent, "ColorEditor", false, false, true, true, 5,
+            var baseHoriGroup = UIFactory.CreateHorizontalGroup(mainContent, "ColorEditor", false, false, true, true, 5,
                 default, new Color(1, 1, 1, 0), TextAnchor.MiddleLeft);
 
             var imgHolder = UIFactory.CreateVerticalGroup(baseHoriGroup, "ImgHolder", true, true, true, true, 0, new Vector4(1, 1, 1, 1),
@@ -72,8 +73,8 @@ namespace MelonPrefManager.UI.InteractiveValues
             UIFactory.SetLayoutElement(imgHolder, minWidth: 50, minHeight: 25, flexibleWidth: 999, flexibleHeight: 0);
 
             var imgObj = UIFactory.CreateUIObject("ColorImageHelper", imgHolder, new Vector2(100, 25));
-            m_colorImage = imgObj.AddComponent<Image>();
-            m_colorImage.color = Value is Color ? (Color)this.Value : (Color)(Color32)this.Value;
+            colorImage = imgObj.AddComponent<Image>();
+            colorImage.color = Value is Color ? (Color)this.Value : (Color)(Color32)this.Value;
 
             // sliders / inputs
 
@@ -91,17 +92,17 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         internal void AddEditorRow(int index, GameObject groupObj)
         {
-            var row = UIFactory.CreateHorizontalGroup(groupObj, "EditorRow_" + s_fieldNames[index], 
+            var row = UIFactory.CreateHorizontalGroup(groupObj, "EditorRow_" + fieldNames[index], 
                 false, true, true, true, 5, default, new Color(1, 1, 1, 0));
 
-            var label = UIFactory.CreateLabel(row, "RowLabel", $"{s_fieldNames[index]}:", TextAnchor.MiddleRight, Color.cyan);
+            var label = UIFactory.CreateLabel(row, "RowLabel", $"{fieldNames[index]}:", TextAnchor.MiddleRight, Color.cyan);
             UIFactory.SetLayoutElement(label.gameObject, minWidth: 17, flexibleWidth: 0, minHeight: 25);
 
             var inputFieldObj = UIFactory.CreateInputField(row, "InputField", "...");
             UIFactory.SetLayoutElement(inputFieldObj.Component.gameObject, minWidth: 40, minHeight: 25, flexibleWidth: 0);
 
             var inputField = inputFieldObj.Component;
-            m_inputs[index] = inputField;
+            inputs[index] = inputField;
             inputField.characterValidation = Value is Color
                                              ? InputField.CharacterValidation.Decimal
                                              : InputField.CharacterValidation.Integer; // color32 uses byte
@@ -112,18 +113,18 @@ namespace MelonPrefManager.UI.InteractiveValues
                 {
                     float val = float.Parse(value);
                     SetValueToColor(val);
-                    m_sliders[index].value = val;
+                    sliders[index].value = val;
                 }
                 else
                 {
                     byte val = byte.Parse(value);
                     SetValueToColor32(val);
-                    m_sliders[index].value = val;
+                    sliders[index].value = val;
                 }
             });
 
             var sliderObj = UIFactory.CreateSlider(row, "Slider", out Slider slider);
-            m_sliders[index] = slider;
+            sliders[index] = slider;
             UIFactory.SetLayoutElement(sliderObj, minHeight: 25, minWidth: 70, flexibleWidth: 999, flexibleHeight: 0);
             slider.minValue = 0;
             if (Value is Color)
@@ -146,13 +147,13 @@ namespace MelonPrefManager.UI.InteractiveValues
                         var val = ((byte)value).ToString();
                         inputField.text = val;
                         SetValueToColor32((byte)value);
-                        m_inputs[index].text = val;
+                        inputs[index].text = val;
                     }
                     else
                     {
                         inputField.text = value.ToString();
                         SetValueToColor(value);
-                        m_inputs[index].text = value.ToString();
+                        inputs[index].text = value.ToString();
                     }
                 }
                 catch (Exception ex)
@@ -174,7 +175,7 @@ namespace MelonPrefManager.UI.InteractiveValues
                     case 3: _color.a = floatValue; break;
                 }
                 Value = _color;
-                m_colorImage.color = _color;
+                colorImage.color = _color;
                 Owner.SetValueFromIValue();
             }
 
@@ -204,7 +205,7 @@ namespace MelonPrefManager.UI.InteractiveValues
                     case 3: _color.a = byteValue; break;
                 }
                 Value = _color;
-                m_colorImage.color = _color;
+                colorImage.color = _color;
                 Owner.SetValueFromIValue();
             }
 

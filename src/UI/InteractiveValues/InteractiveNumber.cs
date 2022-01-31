@@ -9,16 +9,18 @@ using MelonPrefManager.UI;
 using MelonLoader;
 using MelonLoader.Preferences;
 using UniverseLib.UI;
+using UniverseLib.UI.Models;
+using UniverseLib;
 
 namespace MelonPrefManager.UI.InteractiveValues
 {
     public class InteractiveNumber : InteractiveValue
     {
-        internal InputFieldRef m_valueInput;
+        internal InputFieldRef valueInput;
 
-        public MethodInfo ParseMethod => m_parseMethod ??= Value.GetType().GetMethod("Parse", new Type[] { typeof(string) });
-        private MethodInfo m_parseMethod;
-        private Slider m_slider;
+        public MethodInfo ParseMethod => parseMethod ??= Value.GetType().GetMethod("Parse", new Type[] { typeof(string) });
+        private MethodInfo parseMethod;
+        private Slider slider;
 
         public InteractiveNumber(object value, Type valueType) : base(value, valueType) { }
 
@@ -27,35 +29,35 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         public override void RefreshUIForValue()
         {
-            m_valueInput.Text = Value.ToString();
+            valueInput.Text = Value.ToString();
 
-            if (!m_valueInput.Component.gameObject.activeSelf)
-                m_valueInput.Component.gameObject.SetActive(true);
+            if (!valueInput.Component.gameObject.activeSelf)
+                valueInput.Component.gameObject.SetActive(true);
 
-            if (m_slider)
-                m_slider.value = (float)Convert.ChangeType(Value, typeof(float));
+            if (slider)
+                slider.value = (float)Convert.ChangeType(Value, typeof(float));
         }
 
         internal void SetValueFromInput()
         {
             try
             {
-                Value = ParseMethod.Invoke(null, new object[] { m_valueInput.Text });
+                Value = ParseMethod.Invoke(null, new object[] { valueInput.Text });
 
                 if (Owner.RefConfig.Validator != null && !Owner.RefConfig.Validator.IsValid(Value))
                 {
-                    m_valueInput.Component.textComponent.color = Color.red;
+                    valueInput.Component.textComponent.color = Color.red;
                     return;
                 }
 
                 Owner.SetValueFromIValue();
                 RefreshUIForValue();
 
-                m_valueInput.Component.textComponent.color = Color.white;
+                valueInput.Component.textComponent.color = Color.white;
             }
             catch
             {
-                m_valueInput.Component.textComponent.color = Color.red;
+                valueInput.Component.textComponent.color = Color.red;
             }
         }
 
@@ -63,12 +65,12 @@ namespace MelonPrefManager.UI.InteractiveValues
         {
             base.ConstructUI(parent);
 
-            m_valueInput = UIFactory.CreateInputField(m_mainContent, "InteractiveNumberInput", "...");
-            UIFactory.SetLayoutElement(m_valueInput.Component.gameObject, minWidth: 120, minHeight: 25, flexibleWidth: 0);
+            valueInput = UIFactory.CreateInputField(mainContent, "InteractiveNumberInput", "...");
+            UIFactory.SetLayoutElement(valueInput.Component.gameObject, minWidth: 120, minHeight: 25, flexibleWidth: 0);
 
-            m_valueInput.Component.gameObject.SetActive(false);
+            valueInput.Component.gameObject.SetActive(false);
 
-            m_valueInput.OnValueChanged += (string val) =>
+            valueInput.OnValueChanged += (string val) =>
             {
                 SetValueFromInput();
             };
@@ -81,21 +83,21 @@ namespace MelonPrefManager.UI.InteractiveValues
 
             if (Owner.RefConfig.Validator is IValueRange range)
             {
-                Owner.m_mainLabel.text += $" <color=grey><i>[{range.MinValue.ToString()} - {range.MaxValue.ToString()}]</i></color>";
+                Owner.mainLabel.text += $" <color=grey><i>[{range.MinValue.ToString()} - {range.MaxValue.ToString()}]</i></color>";
 
-                var sliderObj = UIFactory.CreateSlider(m_mainContent, "ValueSlider", out m_slider);
+                var sliderObj = UIFactory.CreateSlider(mainContent, "ValueSlider", out slider);
                 UIFactory.SetLayoutElement(sliderObj, minWidth: 250, minHeight: 25);
 
-                m_slider.minValue = (float)Convert.ChangeType(range.MinValue, typeof(float));
-                m_slider.maxValue = (float)Convert.ChangeType(range.MaxValue, typeof(float));
+                slider.minValue = (float)Convert.ChangeType(range.MinValue, typeof(float));
+                slider.maxValue = (float)Convert.ChangeType(range.MaxValue, typeof(float));
 
-                m_slider.value = (float)Convert.ChangeType(Value, typeof(float));
+                slider.value = (float)Convert.ChangeType(Value, typeof(float));
 
-                m_slider.onValueChanged.AddListener((float val) =>
+                slider.onValueChanged.AddListener((float val) =>
                 {
                     Value = Convert.ChangeType(val, FallbackType);
                     Owner.SetValueFromIValue();
-                    m_valueInput.Text = Value.ToString();
+                    valueInput.Text = Value.ToString();
                 });
 
                 //m_valueInput.onValueChanged.AddListener((string val) => 

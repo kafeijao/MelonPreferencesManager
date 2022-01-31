@@ -22,7 +22,7 @@ namespace MelonPrefManager
         public const string GUID = "com.sinai.MelonPreferencesManager";
         public const string NAME = "MelonPreferencesManager";
         public const string AUTHOR = "Sinai";
-        public const string VERSION = "0.9.5";
+        public const string VERSION = "1.0.0";
 
         public static PrefManagerMod Instance { get; private set; }
 
@@ -38,7 +38,7 @@ namespace MelonPrefManager
             Instance = this;
             InitConfig();
 
-            UniverseLib.Universe.Init(Startup_Delay.Value, LateInit, LogHandler, new UniverseLib.Config.UUConfig
+            UniverseLib.Universe.Init(Startup_Delay.Value, LateInit, LogHandler, new()
             {
                 Disable_EventSystem_Override = Disable_EventSystem_Override.Value,
                 Force_Unlock_Mouse = true,

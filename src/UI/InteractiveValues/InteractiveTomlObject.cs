@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using MelonLoader.Preferences;
 using UniverseLib;
 using UniverseLib.UI;
+using UniverseLib.UI.Models;
 
 namespace MelonPrefManager.UI.InteractiveValues
 {
@@ -44,9 +45,9 @@ namespace MelonPrefManager.UI.InteractiveValues
 
         public object TomlValue;
         
-        internal InputFieldRef m_valueInput;
-        internal GameObject m_hiddenObj;
-        internal Text m_placeholderText;
+        internal InputFieldRef valueInput;
+        internal GameObject hiddenObj;
+        internal Text placeholderText;
 
         public override void OnValueUpdated()
         {
@@ -60,8 +61,8 @@ namespace MelonPrefManager.UI.InteractiveValues
                 try 
                 {
                     serialized = (string)_serializedValueProperty.GetValue(TomlValue, null); 
-                    m_valueInput.Text = serialized;
-                    m_placeholderText.text = m_valueInput.Text;
+                    valueInput.Text = serialized;
+                    placeholderText.text = valueInput.Text;
                 } 
                 catch 
                 {
@@ -73,7 +74,7 @@ namespace MelonPrefManager.UI.InteractiveValues
                     else 
                         serialized = (string)_serializeTableMethod.Invoke(TomlValue, new object[] { null, false });
 
-                    m_valueInput.Text = serialized;
+                    valueInput.Text = serialized;
                     PrefManagerMod.Log("Done");
                 }
 
@@ -95,49 +96,49 @@ namespace MelonPrefManager.UI.InteractiveValues
 
                 Owner.SetValueFromIValue();
 
-                m_valueInput.Component.textComponent.color = Color.white;
+                valueInput.Component.textComponent.color = Color.white;
             }
             catch
             {
-                m_valueInput.Component.textComponent.color = Color.red;
+                valueInput.Component.textComponent.color = Color.red;
             }
         }
 
         public override void RefreshUIForValue()
         {
-            if (!m_hiddenObj.gameObject.activeSelf)
-                m_hiddenObj.gameObject.SetActive(true);
+            if (!hiddenObj.gameObject.activeSelf)
+                hiddenObj.gameObject.SetActive(true);
         }
 
         public override void ConstructUI(GameObject parent)
         {
             base.ConstructUI(parent);
 
-            m_hiddenObj = UIFactory.CreateLabel(m_mainContent, "HiddenLabel", "", TextAnchor.MiddleLeft).gameObject;
-            m_hiddenObj.SetActive(false);
-            var hiddenText = m_hiddenObj.GetComponent<Text>();
+            hiddenObj = UIFactory.CreateLabel(mainContent, "HiddenLabel", "", TextAnchor.MiddleLeft).gameObject;
+            hiddenObj.SetActive(false);
+            var hiddenText = hiddenObj.GetComponent<Text>();
             hiddenText.color = Color.clear;
             hiddenText.fontSize = 14;
             hiddenText.raycastTarget = false;
             hiddenText.supportRichText = false;
-            var hiddenFitter = m_hiddenObj.AddComponent<ContentSizeFitter>();
+            var hiddenFitter = hiddenObj.AddComponent<ContentSizeFitter>();
             hiddenFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            UIFactory.SetLayoutElement(m_hiddenObj, minHeight: 25, flexibleHeight: 500, minWidth: 250, flexibleWidth: 9000);
-            UIFactory.SetLayoutGroup<HorizontalLayoutGroup>(m_hiddenObj, true, true, true, true);
+            UIFactory.SetLayoutElement(hiddenObj, minHeight: 25, flexibleHeight: 500, minWidth: 250, flexibleWidth: 9000);
+            UIFactory.SetLayoutGroup<HorizontalLayoutGroup>(hiddenObj, true, true, true, true);
 
-            m_valueInput = UIFactory.CreateInputField(m_hiddenObj, "StringInputField", "...");
-            UIFactory.SetLayoutElement(m_valueInput.Component.gameObject, minWidth: 120, minHeight: 25, flexibleWidth: 5000, flexibleHeight: 5000);
+            valueInput = UIFactory.CreateInputField(hiddenObj, "StringInputField", "...");
+            UIFactory.SetLayoutElement(valueInput.Component.gameObject, minWidth: 120, minHeight: 25, flexibleWidth: 5000, flexibleHeight: 5000);
 
-            m_valueInput.Component.lineType = InputField.LineType.MultiLineNewline;
+            valueInput.Component.lineType = InputField.LineType.MultiLineNewline;
 
-            m_placeholderText = m_valueInput.Component.placeholder.GetComponent<Text>();
+            placeholderText = valueInput.Component.placeholder.GetComponent<Text>();
 
-            m_placeholderText.supportRichText = false;
-            m_valueInput.Component.textComponent.supportRichText = false;
+            placeholderText.supportRichText = false;
+            valueInput.Component.textComponent.supportRichText = false;
 
             OnValueUpdated();
 
-            m_valueInput.OnValueChanged += (string val) =>
+            valueInput.OnValueChanged += (string val) =>
             {
                 hiddenText.text = val ?? "";
                 LayoutRebuilder.ForceRebuildLayoutImmediate(Owner.ContentRect);
