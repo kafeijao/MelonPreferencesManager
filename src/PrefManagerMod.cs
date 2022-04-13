@@ -26,7 +26,7 @@ namespace MelonPrefManager
         public const string GUID = "com.sinai.MelonPreferencesManager";
         public const string NAME = "MelonPreferencesManager";
         public const string AUTHOR = "Sinai";
-        public const string VERSION = "1.0.11";
+        public const string VERSION = "1.0.12";
 
         public static PrefManagerMod Instance { get; private set; }
 
@@ -59,7 +59,7 @@ namespace MelonPrefManager
 
         public override void OnUpdate()
         {
-            if (!UIManager.UIRoot)
+            if (UIManager.Instance == null || !UIManager.Instance.UIRoot)
                 return;
 
             if (InputManager.GetKeyDown(Main_Menu_Toggle.Value))
