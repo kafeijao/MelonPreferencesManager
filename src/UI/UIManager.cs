@@ -61,6 +61,7 @@ namespace MelonPrefManager.UI
                     return;
 
                 UniversalUI.SetUIActive(PrefManagerMod.GUID, value);
+                Instance.SetActive(value);
             }
         }
 
@@ -317,6 +318,12 @@ namespace MelonPrefManager.UI
             ConstructToolbar();
 
             ConstructEditorViewport();
+        }
+
+        protected override void OnClosePanelClicked()
+        {
+            base.OnClosePanelClicked();
+            ShowMenu = false;
         }
 
         private void ConstructTitleBar()
